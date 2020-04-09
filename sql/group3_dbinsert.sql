@@ -14,19 +14,19 @@ CREATE TABLE STUDENTS
     name        VARCHAR(30) NOT NULL,
     gender      CHAR(1)     NOT NULL,
     major       VARCHAR(20) NOT NULL,
-    total_order REAL,
-    discount    REAL,
+    total_order REAL DEFAULT 0,
+    discount    REAL DEFAULT 0,
     PRIMARY KEY (stu_no)
 );
 
 CREATE TABLE ORDERS
 (
     order_no    CHAR(10),
-    stu_no      CHAR(8),
+    stu_no      CHAR(8)     NOT NULL,
     order_date  DATE        NOT NULL,
-    status      INT,
-    total_price REAL,
-    pay_method  VARCHAR(30) NOT NULL,
+    status      INT  DEFAULT 0,
+    total_price REAL DEFAULT 0,
+    pay_method  VARCHAR(30) not null,
     card_no     CHAR(16),
     PRIMARY KEY (order_no),
     FOREIGN KEY (stu_no) REFERENCES STUDENTS ON DELETE CASCADE
@@ -34,10 +34,10 @@ CREATE TABLE ORDERS
 
 CREATE TABLE BOOK_IN_ORDERS
 (
-    order_no  CHAR(10),
-    book_no   CHAR(13),
-    qty       INT,
-    deliver_date DATE,
+    order_no     CHAR(10),
+    book_no      CHAR(13),
+    qty          INT,
+    deliver_date DATE DEFAULT NULL,
     PRIMARY KEY (order_no, book_no),
     FOREIGN KEY (book_no) REFERENCES BOOKS ON DELETE CASCADE,
     FOREIGN KEY (order_no) REFERENCES ORDERS ON DELETE CASCADE
