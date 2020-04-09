@@ -8,6 +8,10 @@ public class DBConn {
         in = new Scanner(System.in);
     }
 
+    public void orderSearch() {
+
+    }
+
     public static void main(String[] args){
 
     }
