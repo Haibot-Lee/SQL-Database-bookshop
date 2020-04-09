@@ -1,14 +1,16 @@
+
 public class DBConn {
 
+    public DBConn() {
+        System.out.println("Welcome to the online University bookshop!");
+    }
+
     public void orderMaking() {
-        //agdkhlajfdgjkagdfjGDchjkgLSah
+        // This might cause conflicts
+        // Rebase testing
     }
 
     public void orderSearch() {
-
-    }
-
-    public void orderUpdate(){
 
     }
 
