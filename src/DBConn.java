@@ -1,14 +1,12 @@
 import java.util.Scanner;
 
 public class DBConn {
-    Scanner in;
 
-    public DBConn() {
-        System.out.println("Welcome to the online University bookshop!");
-        in = new Scanner(System.in);
+    public void orderMaking() {
+
     }
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
 
     }
 }
