@@ -1,16 +1,14 @@
-import java.util.Scanner;
-
 public class DBConn {
 
-    public DBConn() {
-        System.out.println("Welcome to the online University bookshop!");
-    }
-
     public void orderMaking() {
-
+        //agdkhlajfdgjkagdfjGDchjkgLSah
     }
 
     public void orderSearch() {
+
+    }
+
+    public void orderUpdate(){
 
     }
 
