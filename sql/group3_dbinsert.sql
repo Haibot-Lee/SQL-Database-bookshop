@@ -55,3 +55,52 @@ END;
 .
 /
 
+
+-- Calculating total_price of an Order
+CREATE OR REPLACE TRIGGER total_price_insert
+    AFTER INSERT
+    ON BOOK_IN_ORDERS
+    FOR EACH ROW
+DECLARE
+    p REAL;
+    d REAL;
+BEGIN
+    SELECT price INTO p FROM BOOKS WHERE BOOKS.book_no = :new.book_no;
+    SELECT discount INTO d
+        FROM BOOK_IN_ORDERS NATURAL JOIN ORDERS O NATURAL JOIN STUDENTS S;
+    UPDATE ORDERS SET total_price = total_price + :new.qty * p * (1 - d) WHERE order_no = :new.order_no;
+END;
+.
+/
+
+CREATE OR REPLACE TRIGGER total_price_update
+    AFTER UPDATE    -- when a new book is already in the order
+    ON BOOK_IN_ORDERS
+    FOR EACH ROW
+DECLARE
+    p REAL;
+    d REAL;
+BEGIN
+    SELECT price INTO p FROM BOOKS WHERE BOOKS.book_no = :new.book_no;
+    SELECT discount INTO d
+        FROM BOOK_IN_ORDERS NATURAL JOIN ORDERS O NATURAL JOIN STUDENTS S;
+    UPDATE ORDERS SET total_price = total_price + (:new.qty - :old.qty) * p * (1 - d) WHERE order_no = :new.order_no;
+END;
+.
+/
+
+CREATE OR REPLACE TRIGGER total_price_delete
+    AFTER DELETE    -- TODO Review the DELETE condition later
+    ON BOOK_IN_ORDERS
+    FOR EACH ROW
+DECLARE
+    p REAL;
+    d REAL;
+BEGIN
+    SELECT price INTO p FROM BOOKS WHERE BOOKS.book_no = :old.book_no;
+    SELECT discount INTO d
+        FROM BOOK_IN_ORDERS NATURAL JOIN ORDERS O NATURAL JOIN STUDENTS S;
+    UPDATE ORDERS SET total_price = total_price - :old.qty * p * (1 - d) WHERE order_no = :old.order_no;
+END;
+.
+/
