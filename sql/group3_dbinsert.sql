@@ -37,7 +37,7 @@ CREATE TABLE BOOK_IN_ORDERS
     order_no  CHAR(10),
     book_no   CHAR(13),
     qty       INT,
-    delivered INT,
+    deliver_date DATE,
     PRIMARY KEY (order_no, book_no),
     FOREIGN KEY (book_no) REFERENCES BOOKS ON DELETE CASCADE,
     FOREIGN KEY (order_no) REFERENCES ORDERS ON DELETE CASCADE
