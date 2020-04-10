@@ -100,12 +100,51 @@ VALUES ('22222222', 'Rex', 'M', 'COMP', 900, 0);
 INSERT INTO STUDENTS
 VALUES ('33333333', 'Jerry', 'M', 'COMP', 300, 0);
 
-INSERT INTO BOOKS
-VALUES ('001', 'Harry Potter I', 'J. K. Rowling', 300, 10);
-INSERT INTO BOOKS
-VALUES ('002', 'Harry Potter II', 'J. K. Rowling', 300, 0);
-INSERT INTO BOOKS
-VALUES ('003', 'Harry Potter III', 'J. K. Rowling', 400, 20);
+-- Calculating total_price of an Order
+CREATE OR REPLACE TRIGGER total_price_insert
+    AFTER INSERT
+    ON BOOK_IN_ORDERS
+    FOR EACH ROW
+DECLARE
+    p REAL;
+    d REAL;
+BEGIN
+    SELECT price INTO p FROM BOOKS WHERE BOOKS.book_no = :new.book_no;
+    SELECT discount INTO d
+        FROM ORDERS O NATURAL JOIN STUDENTS S WHERE order_no = :new.order_no;
+    UPDATE ORDERS SET total_price = total_price + :new.qty * p * (1 - d) WHERE order_no = :new.order_no;
+END;
+.
+/
 
-INSERT INTO ORDERS
-VALUES ('',);
+CREATE OR REPLACE TRIGGER total_price_update
+    AFTER UPDATE    -- when a new book is already in the order
+    ON BOOK_IN_ORDERS
+    FOR EACH ROW
+DECLARE
+    p REAL;
+    d REAL;
+BEGIN
+    SELECT price INTO p FROM BOOKS WHERE BOOKS.book_no = :new.book_no;
+    SELECT discount INTO d
+        FROM ORDERS O NATURAL JOIN STUDENTS S WHERE order_no = :new.order_no;
+    UPDATE ORDERS SET total_price = total_price + (:new.qty - :old.qty) * p * (1 - d) WHERE order_no = :new.order_no;
+END;
+.
+/
+
+CREATE OR REPLACE TRIGGER total_price_delete
+    AFTER DELETE    -- TODO Review the DELETE condition later
+    ON BOOK_IN_ORDERS
+    FOR EACH ROW
+DECLARE
+    p REAL;
+    d REAL;
+BEGIN
+    SELECT price INTO p FROM BOOKS WHERE BOOKS.book_no = :old.book_no;
+    SELECT discount INTO d
+        FROM ORDERS O NATURAL JOIN STUDENTS S WHERE order_no = :old.order_no;
+    UPDATE ORDERS SET total_price = total_price - :old.qty * p * (1 - d) WHERE order_no = :old.order_no;
+END;
+.
+/
