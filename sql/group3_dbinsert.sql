@@ -67,7 +67,7 @@ DECLARE
 BEGIN
     SELECT price INTO p FROM BOOKS WHERE BOOKS.book_no = :new.book_no;
     SELECT discount INTO d
-        FROM BOOK_IN_ORDERS NATURAL JOIN ORDERS O NATURAL JOIN STUDENTS S;
+        FROM ORDERS O NATURAL JOIN STUDENTS S WHERE order_no = :new.order_no;
     UPDATE ORDERS SET total_price = total_price + :new.qty * p * (1 - d) WHERE order_no = :new.order_no;
 END;
 .
@@ -83,7 +83,7 @@ DECLARE
 BEGIN
     SELECT price INTO p FROM BOOKS WHERE BOOKS.book_no = :new.book_no;
     SELECT discount INTO d
-        FROM BOOK_IN_ORDERS NATURAL JOIN ORDERS O NATURAL JOIN STUDENTS S;
+        FROM ORDERS O NATURAL JOIN STUDENTS S WHERE order_no = :new.order_no;
     UPDATE ORDERS SET total_price = total_price + (:new.qty - :old.qty) * p * (1 - d) WHERE order_no = :new.order_no;
 END;
 .
@@ -99,7 +99,7 @@ DECLARE
 BEGIN
     SELECT price INTO p FROM BOOKS WHERE BOOKS.book_no = :old.book_no;
     SELECT discount INTO d
-        FROM BOOK_IN_ORDERS NATURAL JOIN ORDERS O NATURAL JOIN STUDENTS S;
+        FROM ORDERS O NATURAL JOIN STUDENTS S WHERE order_no = :old.order_no;
     UPDATE ORDERS SET total_price = total_price - :old.qty * p * (1 - d) WHERE order_no = :old.order_no;
 END;
 .
