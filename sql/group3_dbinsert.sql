@@ -55,3 +55,57 @@ END;
 .
 /
 
+CREATE OR REPLACE TRIGGER add_dislevel_constraint
+    AFTER INSERT OR UPDATE
+    ON ORDERS
+    FOR EACH ROW
+DECLARE
+    c REAL;
+BEGIN
+    UPDATE STUDENTS SET total_order = total_order + :new.total_price WHERE stu_no = :new.stu_no;
+    SELECT total_order INTO c FROM STUDENTS WHERE stu_no = :new.stu_no;
+    IF c >= 2000 THEN
+        UPDATE STUDENTS SET discount=0.2;
+    ELSIF c >= 1000 THEN
+        UPDATE STUDENTS SET discount=0.1;
+    END IF;
+END;
+.
+/
+
+CREATE OR REPLACE TRIGGER del_dislevel&amount_constraint
+    AFTER DELETE
+    ON ORDERS
+    FOR EACH ROW
+DECLARE
+    c   REAL;
+    cnt INT;
+    i INT;
+BEGIN
+    UPDATE STUDENTS SET total_order = total_order - :old.total_price WHERE stu_no = :old.stu_no;
+    SELECT total_order INTO c FROM STUDENTS WHERE stu_no = :old.stu_no;
+    IF c >= 2000 THEN
+        UPDATE STUDENTS SET discount=0.2;
+    ELSIF c >= 1000 THEN
+        UPDATE STUDENTS SET discount=0.1;
+    END IF;
+END;
+.
+/
+
+INSERT INTO STUDENTS
+VALUES ('11111111', 'Kurt', 'M', 'COMP', 1900, 0.1);
+INSERT INTO STUDENTS
+VALUES ('22222222', 'Rex', 'M', 'COMP', 900, 0);
+INSERT INTO STUDENTS
+VALUES ('33333333', 'Jerry', 'M', 'COMP', 300, 0);
+
+INSERT INTO BOOKS
+VALUES ('001', 'Harry Potter I', 'J. K. Rowling', 300, 10);
+INSERT INTO BOOKS
+VALUES ('002', 'Harry Potter II', 'J. K. Rowling', 300, 0);
+INSERT INTO BOOKS
+VALUES ('003', 'Harry Potter III', 'J. K. Rowling', 400, 20);
+
+INSERT INTO ORDERS
+VALUES ('',);

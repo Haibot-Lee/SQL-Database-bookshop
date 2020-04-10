@@ -1,9 +1,18 @@
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Scanner;
 
 public class DBConn {
+    Scanner in;
+
+    public DBConn() {
+        System.out.println("Welcome to the online university bookshop!");
+        in = new Scanner(System.in);
+    }
 
     public void login() {
+        System.out.print("Please login with your student id:");
+        String id = in.nextLine();
 
     }
 
@@ -14,7 +23,7 @@ public class DBConn {
             String orderNo = "";
 
             Date date = new Date();
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-YYYY");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-YYYY");  // TODO 时间-系统语言冲突
             String orderDate = dateFormat.format(date);
 
             //let user choose pay method: 1. cash 2.octopus 3.credit card
@@ -69,6 +78,6 @@ public class DBConn {
     }
 
     public static void main(String[] args) {
-
+        DBConn Ubookshop = new DBConn();
     }
 }
