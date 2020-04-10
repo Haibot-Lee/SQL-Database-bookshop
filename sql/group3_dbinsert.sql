@@ -4,7 +4,7 @@ CREATE TABLE BOOKS
     title   VARCHAR(50) NOT NULL,
     author  VARCHAR(30) NOT NULL,
     price   REAL        NOT NULL,
-    amount  INT         NOT NULL,
+    stock  INT         NOT NULL,
     PRIMARY KEY (book_no)
 );
 
@@ -65,15 +65,15 @@ BEGIN
     UPDATE STUDENTS SET total_order = total_order + :new.total_price WHERE stu_no = :new.stu_no;
     SELECT total_order INTO c FROM STUDENTS WHERE stu_no = :new.stu_no;
     IF c >= 2000 THEN
-        UPDATE STUDENTS SET discount=0.2;
+        UPDATE STUDENTS SET discount=0.2;   -- TODO: fix bug: add "WHERE"
     ELSIF c >= 1000 THEN
-        UPDATE STUDENTS SET discount=0.1;
+        UPDATE STUDENTS SET discount=0.1;   -- TODO: fix bug: add "WHERE"
     END IF;
 END;
 .
 /
 
-CREATE OR REPLACE TRIGGER del_dislevel&amount_constraint
+CREATE OR REPLACE TRIGGER del_dislevel_constraint
     AFTER DELETE
     ON ORDERS
     FOR EACH ROW
@@ -83,16 +83,16 @@ BEGIN
     UPDATE STUDENTS SET total_order = total_order - :old.total_price WHERE stu_no = :old.stu_no;
     SELECT total_order INTO c FROM STUDENTS WHERE stu_no = :old.stu_no;
     IF c >= 2000 THEN
-        UPDATE STUDENTS SET discount=0.2;
+        UPDATE STUDENTS SET discount=0.2;   -- TODO: fix bug: add "WHERE"
     ELSIF c >= 1000 THEN
-        UPDATE STUDENTS SET discount=0.1;
+        UPDATE STUDENTS SET discount=0.1;   -- TODO: fix bug: add "WHERE"
     END IF;
 END;
 .
 /
 
 -- Calculating total_price of an Order
-CREATE OR REPLACE TRIGGER total_price_insert
+CREATE OR REPLACE TRIGGER total_price_stock_insert
     AFTER INSERT
     ON BOOK_IN_ORDERS
     FOR EACH ROW
@@ -107,11 +107,13 @@ BEGIN
              NATURAL JOIN STUDENTS S
     WHERE order_no = :new.order_no;
     UPDATE ORDERS SET total_price = total_price + :new.qty * p * (1 - d) WHERE order_no = :new.order_no;
+
+    UPDATE BOOKS SET stock = stock - :new.qty WHERE book_no = :new.book_no;
 END;
 .
 /
 
-CREATE OR REPLACE TRIGGER total_price_update
+CREATE OR REPLACE TRIGGER total_price_stock_update
     AFTER UPDATE -- when a new book is already in the order
     ON BOOK_IN_ORDERS
     FOR EACH ROW
@@ -126,11 +128,13 @@ BEGIN
              NATURAL JOIN STUDENTS S
     WHERE order_no = :new.order_no;
     UPDATE ORDERS SET total_price = total_price + (:new.qty - :old.qty) * p * (1 - d) WHERE order_no = :new.order_no;
+
+    UPDATE BOOKS SET stock = stock - (:new.qty - :old.qty) WHERE book_no = :new.book_no;
 END;
 .
 /
 
-CREATE OR REPLACE TRIGGER total_price_delete
+CREATE OR REPLACE TRIGGER total_price_stock_delete
     AFTER DELETE -- TODO Review the DELETE condition later
     ON BOOK_IN_ORDERS
     FOR EACH ROW
@@ -145,6 +149,8 @@ BEGIN
              NATURAL JOIN STUDENTS S
     WHERE order_no = :old.order_no;
     UPDATE ORDERS SET total_price = total_price - :old.qty * p * (1 - d) WHERE order_no = :old.order_no;
+
+    UPDATE BOOKS SET stock = stock + :old.qty WHERE book_no = :old.book_no;
 END;
 .
 /
