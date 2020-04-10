@@ -4,7 +4,7 @@ CREATE TABLE BOOKS
     title   VARCHAR(50) NOT NULL,
     author  VARCHAR(30) NOT NULL,
     price   REAL        NOT NULL,
-    stock  INT         NOT NULL,
+    stock   INT         NOT NULL,
     PRIMARY KEY (book_no)
 );
 
@@ -43,49 +43,29 @@ CREATE TABLE BOOK_IN_ORDERS
     FOREIGN KEY (order_no) REFERENCES ORDERS ON DELETE CASCADE
 );
 
-CREATE OR REPLACE TRIGGER students_constraint
-    BEFORE INSERT OR UPDATE
-    ON STUDENTS
-    FOR EACH ROW
-BEGIN
-    IF (:new.gender != 'M' AND :new.gender != 'm' AND :new.gender != 'F' AND :new.gender != 'f') THEN
-        RAISE_APPLICATION_ERROR(-20000, 'invalid gender');
-    END IF;
-END;
-.
-/
-
-CREATE OR REPLACE TRIGGER add_dislevel_constraint
-    AFTER INSERT OR UPDATE
+-- update the discount level after update orders
+CREATE OR REPLACE TRIGGER addCancel_disLevel_constraint
+    AFTER UPDATE
     ON ORDERS
     FOR EACH ROW
 DECLARE
     c REAL;
 BEGIN
-    UPDATE STUDENTS SET total_order = total_order + :new.total_price WHERE stu_no = :new.stu_no;
+    IF :new.status = 0 THEN --add or delete book
+        UPDATE STUDENTS
+        SET total_order = total_order + (:new.total_price - :old.total_price)
+        WHERE stu_no = :new.stu_no;
+    ELSIF :new.status = 4 THEN -- cancel order
+        UPDATE STUDENTS
+        SET total_order = total_order - :old.total_price
+        WHERE stu_no = :new.stu_no;
+    END IF;
+
     SELECT total_order INTO c FROM STUDENTS WHERE stu_no = :new.stu_no;
     IF c >= 2000 THEN
-        UPDATE STUDENTS SET discount=0.2;   -- TODO: fix bug: add "WHERE"
+        UPDATE STUDENTS SET discount=0.2 WHERE stu_no = :new.stu_no;
     ELSIF c >= 1000 THEN
-        UPDATE STUDENTS SET discount=0.1;   -- TODO: fix bug: add "WHERE"
-    END IF;
-END;
-.
-/
-
-CREATE OR REPLACE TRIGGER del_dislevel_constraint
-    AFTER DELETE
-    ON ORDERS
-    FOR EACH ROW
-DECLARE
-    c REAL;
-BEGIN
-    UPDATE STUDENTS SET total_order = total_order - :old.total_price WHERE stu_no = :old.stu_no;
-    SELECT total_order INTO c FROM STUDENTS WHERE stu_no = :old.stu_no;
-    IF c >= 2000 THEN
-        UPDATE STUDENTS SET discount=0.2;   -- TODO: fix bug: add "WHERE"
-    ELSIF c >= 1000 THEN
-        UPDATE STUDENTS SET discount=0.1;   -- TODO: fix bug: add "WHERE"
+        UPDATE STUDENTS SET discount=0.1 WHERE stu_no = :new.stu_no;
     END IF;
 END;
 .
@@ -127,7 +107,9 @@ BEGIN
     FROM ORDERS O
              NATURAL JOIN STUDENTS S
     WHERE order_no = :new.order_no;
-    UPDATE ORDERS SET total_price = total_price + (:new.qty - :old.qty) * p * (1 - d) WHERE order_no = :new.order_no;
+    UPDATE ORDERS
+    SET total_price = total_price + (:new.qty - :old.qty) * p * (1 - d)
+    WHERE order_no = :new.order_no;
 
     UPDATE BOOKS SET stock = stock - (:new.qty - :old.qty) WHERE book_no = :new.book_no;
 END;
