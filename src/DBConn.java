@@ -1,20 +1,7 @@
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Scanner;
 
 public class DBConn {
-    Scanner in;
-
-    public DBConn() {
-        System.out.println("Welcome to the online university bookshop!");
-        in = new Scanner(System.in);
-    }
-
-    public void login() {
-        System.out.print("Please login with your student id:");
-        String id = in.nextLine();
-
-    }
 
     public void orderMaking(String stuNo) {
         //check whether he can make order or not
@@ -78,6 +65,5 @@ public class DBConn {
     }
 
     public static void main(String[] args) {
-        DBConn Ubookshop = new DBConn();
     }
 }
