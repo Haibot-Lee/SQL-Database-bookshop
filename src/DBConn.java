@@ -1,19 +1,33 @@
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Scanner;
-
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 public class DBConn {
-    Scanner in;
+    private Connection conn;
+    // Database Host
+    private final String dbHost = "orasrv1.comp.hkbu.edu.hk";
+    // Database Port
+    private final int dbPort = 1521;
 
-    public DBConn() {
-        System.out.println("Welcome to the online university bookshop!");
-        in = new Scanner(System.in);
+    private final String database = "pdborcl.orasrv1.comp.hkbu.edu.hk";
+    private String jdbcHost = dbHost;
+    private int jdbcPort = dbPort;
+
+    public DBConn(String dbuser, String dbpw) {
+        loginDB(dbuser, dbpw);
     }
 
-    public void login() {
-        System.out.print("Please login with your student id:");
-        String id = in.nextLine();
-
+    public boolean loginDB(String dbuser, String dbpw) {
+        String url = "jdbc:oracle:thin:@" + jdbcHost + ":" + jdbcPort + "/" + database;
+        try {
+            conn = DriverManager.getConnection(url, dbuser, dbpw);
+            System.out.println("Database connected: " + database);
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public void orderMaking(String stuNo) {
@@ -78,6 +92,6 @@ public class DBConn {
     }
 
     public static void main(String[] args) {
-        DBConn Ubookshop = new DBConn();
+        DBConn dbConn = new DBConn("e8250009", "e8250009");
     }
 }
