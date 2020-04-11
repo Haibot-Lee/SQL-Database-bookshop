@@ -3,6 +3,9 @@ import java.util.Date;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
 public class DBConn {
     private Connection conn;
     // Database Host
@@ -83,9 +86,20 @@ public class DBConn {
                 + orderNo + "\',\'" + bookNo + "\'," + qty + ")";
     }
 
-    public void orderSearch() {
-
-    }
+    public ResultSet orderSearch(String sid) {
+        try {
+            Statement stm = conn.createStatement();
+            String sql = "SELECT *\n" +
+                    "FROM ORDERS O NATURAL JOIN BOOK_IN_ORDERS BO\n" +
+                    "WHERE O.stu_no = '" + sid + "'";
+            ResultSet rs = stm.executeQuery(sql);
+            stm.close();
+            return rs;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+}
 
     public void orderUpdate() {
 
@@ -93,5 +107,7 @@ public class DBConn {
 
     public static void main(String[] args) {
         DBConn dbConn = new DBConn("e8250009", "e8250009");
+        ResultSet rs = dbConn.orderSearch("22222222");
+        System.out.println(rs);
     }
 }
