@@ -92,9 +92,7 @@ public class DBConn {
             String sql = "SELECT *\n" +
                     "FROM ORDERS O NATURAL JOIN BOOK_IN_ORDERS BO\n" +
                     "WHERE O.stu_no = '" + sid + "'";
-            ResultSet rs = stm.executeQuery(sql);
-            stm.close();
-            return rs;
+            return stm.executeQuery(sql);
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
@@ -106,8 +104,31 @@ public class DBConn {
     }
 
     public static void main(String[] args) {
+        orderSearchTest();
+    }
+
+
+
+    /************* TESTING AREA ***************/
+    private static void orderSearchTest() {
         DBConn dbConn = new DBConn("e8250009", "e8250009");
         ResultSet rs = dbConn.orderSearch("22222222");
-        System.out.println(rs);
+        try {
+            String[] heads = {"order_no", "stu_no", "order_date", "status", "total_price", "payment_method",
+                    "card_no", "book_no", "qty", "deliver_date"};
+            for (int i=0; i<10; i++) {
+                System.out.print(heads[i] + "\t");
+            }
+            System.out.println();
+            while (rs.next()) {
+                for (int i=1; i<=10; i++) {
+                    System.out.print(rs.getString(i) + "\t");
+                }
+                System.out.println();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
+
 }
