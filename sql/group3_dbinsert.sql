@@ -24,7 +24,7 @@ CREATE TABLE ORDERS
     order_no    CHAR(10),
     stu_no      CHAR(8)     NOT NULL,
     order_date  DATE        NOT NULL,
-    status      INT  DEFAULT 0, -- 0未下单，1已下单(可取消)，2不可取消，3完成， 4已取消
+    status      INT  DEFAULT 0,        -- 0可以取消，1不可取消，2completed， 3canceled
     total_price REAL DEFAULT 0,
     pay_method  VARCHAR(30) not null,
     card_no     CHAR(16),
@@ -55,7 +55,7 @@ BEGIN
         UPDATE STUDENTS
         SET total_order = total_order + (:new.total_price - :old.total_price)
         WHERE stu_no = :new.stu_no;
-    ELSIF :new.status = 4 THEN -- cancel order
+    ELSIF :new.status = 3 THEN -- cancel order
         UPDATE STUDENTS
         SET total_order = total_order - :old.total_price
         WHERE stu_no = :new.stu_no;
@@ -181,4 +181,4 @@ VALUES ('222222221', '002', 1, NULL);
 INSERT INTO BOOK_IN_ORDERS
 VALUES ('111111111', '002', 1, NULL);
 
-UPDATE ORDERS SET status = 2 WHERE status = 0;
+-- UPDATE ORDERS SET status = 1 WHERE status = 0;
