@@ -36,26 +36,9 @@ public class DBConn {
         }
     }
 
-    public void orderMaking(String stuNo) {
-        //check whether he can make order or not
-        if (ifAddOrder(stuNo)) {
-            // create orderNo, orderDate
-            String orderNo = "";
-
-            Date date = new Date();
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-YYYY");  // TODO 时间-系统语言冲突
-            String orderDate = dateFormat.format(date);
-
-            //let user choose pay method: 1. cash 2.octopus 3.credit card
-            String payMethod = "";
-            String cardNo;
-            if (payMethod.equals("credit card")) {
-                cardNo = "let user input here";
-                cardNo = "'" + cardNo + "'";
-            } else
-                cardNo = "NULL";
-
-            // use this SQL to insert order
+    public void orderMaking(String orderNo, String stuNo, String orderDate, String payMethod, String cardNo) {
+        try {
+            Statement stm = conn.createStatement();
             String sql = "INSERT INTO ORDERS(order_no, stu_no, order_date, pay_method, card_no) VALUES(\'"
                     + orderNo + "\',\'"
                     + stuNo + "\',\'"
@@ -63,14 +46,8 @@ public class DBConn {
                     + payMethod + "\',"
                     + cardNo + ")";
 
-            // add books to order
-            boolean ifAddBook;
-            do {
-                ifAddBook = false;
-                addBook(orderNo);
-                //if continue add, ifAddBook -> true.
-
-            } while (ifAddBook == true);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
@@ -79,14 +56,8 @@ public class DBConn {
         return true;
     }
 
-    private void addBook(String orderNo) {
-        //let user choose book and quantity
-        String bookNo = "";
-        int qty = 1;
+    public void addBook(String orderNo, String bookNo, int qty) {
 
-        // use this SQL to insert book
-        String sql = "INSERT INTO ORDERS(order_no, book_no, qty) VALUES(\'"
-                + orderNo + "\',\'" + bookNo + "\'," + qty + ")";
     }
 
     public List<Order> searchOrder(String stuNo) {
