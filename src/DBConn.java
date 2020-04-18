@@ -6,6 +6,9 @@ import java.sql.SQLException;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DBConn {
     private Connection conn;
     // Database Host
@@ -86,18 +89,45 @@ public class DBConn {
                 + orderNo + "\',\'" + bookNo + "\'," + qty + ")";
     }
 
-    public ResultSet orderSearch(String sid) {
+    public List<Order> searchOrder(String stuNo) {
+        List<Order> orders = new ArrayList<Order>();
         try {
             Statement stm = conn.createStatement();
             String sql = "SELECT *\n" +
-                    "FROM ORDERS O NATURAL JOIN BOOK_IN_ORDERS BO\n" +
-                    "WHERE O.stu_no = '" + sid + "'";
-            return stm.executeQuery(sql);
+                    "FROM ORDERS O\n" +
+                    "WHERE O.stu_no = '" + stuNo + "'";
+            ResultSet rs = stm.executeQuery(sql);
+            while (rs.next()) {
+                orders.add(new Order(rs.getString(1), rs.getString(2), rs.getDate(3),
+                        rs.getInt(4), rs.getFloat(5), rs.getString(6), rs.getString(7)));
+            }
+            rs.close();
+            stm.close();
         } catch (SQLException e) {
             e.printStackTrace();
-            return null;
         }
-}
+        return orders;
+    }
+
+    public List<BookInOrder> searchBookInOrder(String orderNo) {
+        List<BookInOrder> books = new ArrayList<BookInOrder>();
+        try {
+            Statement stm = conn.createStatement();
+            String sql = "SELECT *\n" +
+                    "FROM BOOK_IN_ORDERS BO\n" +
+                    "WHERE BO.order_no = '" + orderNo + "'";
+            ResultSet rs = stm.executeQuery(sql);
+            while (rs.next()) {
+                books.add(new BookInOrder(rs.getString(1), rs.getString(2),
+                                                rs.getInt(3), rs.getDate(4)));
+            }
+            rs.close();
+            stm.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return books;
+    }
 
     public void orderUpdate() {
 
@@ -108,26 +138,13 @@ public class DBConn {
     }
 
 
-
     /************* TESTING AREA ***************/
     private static void orderSearchTest() {
         DBConn dbConn = new DBConn("e8250009", "e8250009");
-        ResultSet rs = dbConn.orderSearch("22222222");
-        try {
-            String[] heads = {"order_no", "stu_no", "order_date", "status", "total_price", "payment_method",
-                    "card_no", "book_no", "qty", "deliver_date"};
-            for (int i=0; i<10; i++) {
-                System.out.print(heads[i] + "\t");
-            }
-            System.out.println();
-            while (rs.next()) {
-                for (int i=1; i<=10; i++) {
-                    System.out.print(rs.getString(i) + "\t");
-                }
-                System.out.println();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        List<Order> orders = dbConn.searchOrder("22222222");
+
+        for (Order i : orders) {
+            System.out.println(i);
         }
     }
 
