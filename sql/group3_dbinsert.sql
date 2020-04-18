@@ -138,6 +138,21 @@ END;
 /
 
 
+CREATE OR REPLACE PROCEDURE add_book_in_order (o_no CHAR, b_no CHAR, add_qty INT) AS
+    cnt INT;
+BEGIN
+    SELECT COUNT(*) INTO cnt FROM BOOK_IN_ORDERS
+    WHERE order_no = o_no AND book_no = b_no;
+    IF cnt = 0 THEN
+        INSERT INTO BOOK_IN_ORDERS
+        VALUES (o_no, b_no, add_qty, NULL);
+    ELSE
+        UPDATE BOOK_IN_ORDERS SET QTY = QTY + add_qty WHERE order_no = o_no AND book_no = b_no;
+    END IF;
+END;
+
+
+
 INSERT INTO STUDENTS
 VALUES ('11111111', 'Kurt', 'M', 'COMP', 1630, 0.1);
 INSERT INTO STUDENTS
@@ -163,5 +178,7 @@ INSERT INTO BOOK_IN_ORDERS
 VALUES ('222222221', '002', 1, NULL);
 INSERT INTO BOOK_IN_ORDERS
 VALUES ('111111111', '002', 1, NULL);
+
+COMMIT;
 
 -- UPDATE ORDERS SET status = 1 WHERE status = 0;

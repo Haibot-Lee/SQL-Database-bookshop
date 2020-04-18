@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.sql.CallableStatement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,13 +52,21 @@ public class DBConn {
         }
     }
 
-    private boolean ifAddOrder(String stuNo) {
-
-        return true;
-    }
-
+    /**
+     * Add %qty% books into the designated order.
+     *
+     * @param orderNo ORDER_NO
+     * @param bookNo  BOOK_NO
+     * @param qty     quantity to add
+     */
     public void addBook(String orderNo, String bookNo, int qty) {
-
+        try {
+            CallableStatement cs = conn.prepareCall("{CALL ADD_BOOK_IN_ORDER('" + orderNo +
+                        "', '" + bookNo + "', " + qty + ")}");
+            cs.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public List<Order> searchOrder(String stuNo) {
@@ -90,7 +99,7 @@ public class DBConn {
             ResultSet rs = stm.executeQuery(sql);
             while (rs.next()) {
                 books.add(new BookInOrder(rs.getString(1), rs.getString(2),
-                                                rs.getInt(3), rs.getDate(4)));
+                        rs.getInt(3), rs.getDate(4)));
             }
             rs.close();
             stm.close();
@@ -132,8 +141,7 @@ public class DBConn {
             System.out.println(i);
         }
 
-        dbConn.orderUpdate("222222221", "002");
-        System.out.println();
+        dbConn.addBook("222222221", "003", 9);
 
         orders = dbConn.searchOrder("22222222");
         books = dbConn.searchBookInOrder("222222221");
