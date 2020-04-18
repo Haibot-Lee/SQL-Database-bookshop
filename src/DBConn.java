@@ -45,15 +45,12 @@ public class DBConn {
                     + orderDate + "\',\'"
                     + payMethod + "\',"
                     + cardNo + ")";
+            stm.executeUpdate(sql);
+            stm.executeUpdate(sql);
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
-
-    private boolean ifAddOrder(String stuNo) {
-
-        return true;
     }
 
     public void addBook(String orderNo, String bookNo, int qty) {
@@ -90,7 +87,7 @@ public class DBConn {
             ResultSet rs = stm.executeQuery(sql);
             while (rs.next()) {
                 books.add(new BookInOrder(rs.getString(1), rs.getString(2),
-                                                rs.getInt(3), rs.getDate(4)));
+                        rs.getInt(3), rs.getDate(4)));
             }
             rs.close();
             stm.close();
@@ -108,9 +105,29 @@ public class DBConn {
                     "'\n WHERE order_no = '" + orderNo + "' AND book_no = '" + bookNo + "'";
             System.out.println(sql);
             stm.executeUpdate(sql);
-        } catch (SQLException e){
-            e.printStackTrace();;
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
+    }
+
+    public List<String> selectSid() {
+        List<String> sid = new ArrayList<String>();
+        try {
+            Statement stm = conn.createStatement();
+            String sql = "SELECT stu_no FROM STUDENTS";
+            ResultSet rs = stm.executeQuery(sql);
+
+            while (rs.next()) {
+                sid.add(rs.getString(1));
+            }
+            rs.close();
+            stm.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return sid;
     }
 
     public static void main(String[] args) {
@@ -120,7 +137,7 @@ public class DBConn {
 
     /************* TESTING AREA ***************/
     private static void orderSearchTest() {
-        DBConn dbConn = new DBConn("e8250009", "e8250009");
+        DBConn dbConn = new DBConn("e8252125", "e8252125");
         List<Order> orders = dbConn.searchOrder("22222222");
         List<BookInOrder> books = dbConn.searchBookInOrder("222222221");
 
