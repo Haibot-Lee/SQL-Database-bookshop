@@ -132,3 +132,6 @@ public class DBConn {
     }
 
 }
+
+// TODO LIST
+//  * add close() method
