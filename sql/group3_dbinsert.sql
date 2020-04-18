@@ -116,23 +116,6 @@ END;
 .
 /
 
--- reject the insertion/update if status <> 0
-CREATE OR REPLACE TRIGGER status_constraint
-    BEFORE INSERT OR UPDATE
-    ON BOOK_IN_ORDERS
-    FOR EACH ROW
-DECLARE
-    s INT;
-BEGIN
-    SELECT status INTO s FROM ORDERS
-    WHERE order_no = :new.order_no;
-    IF (s <> 0) THEN
-        RAISE_APPLICATION_ERROR(-20000, 'The order cannot be updated at this stage.');
-    END IF;
-END;
-.
-/
-
 CREATE OR REPLACE TRIGGER total_price_stock_delete
     AFTER DELETE -- TODO Review the DELETE condition later
     ON BOOK_IN_ORDERS
