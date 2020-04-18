@@ -129,8 +129,17 @@ public class DBConn {
         return books;
     }
 
-    public void orderUpdate() {
-
+    public void orderUpdate(String orderNo, String bookNo) {
+        try {
+            Statement stm = conn.createStatement();
+            String sql = "UPDATE BOOK_IN_ORDERS\n" +
+                    "SET DELIVER_DATE = '" + new SimpleDateFormat("dd-MMM-yyyy").format(new Date()) +
+                    "'\n WHERE order_no = '" + orderNo + "' AND book_no = '" + bookNo + "'";
+            System.out.println(sql);
+            stm.executeUpdate(sql);
+        } catch (SQLException e){
+            e.printStackTrace();;
+        }
     }
 
     public static void main(String[] args) {
@@ -142,10 +151,31 @@ public class DBConn {
     private static void orderSearchTest() {
         DBConn dbConn = new DBConn("e8250009", "e8250009");
         List<Order> orders = dbConn.searchOrder("22222222");
+        List<BookInOrder> books = dbConn.searchBookInOrder("222222221");
 
         for (Order i : orders) {
             System.out.println(i);
         }
+
+        for (BookInOrder i : books) {
+            System.out.println(i);
+        }
+
+        dbConn.orderUpdate("222222221", "002");
+        System.out.println();
+
+        orders = dbConn.searchOrder("22222222");
+        books = dbConn.searchBookInOrder("222222221");
+
+        for (Order i : orders) {
+            System.out.println(i);
+        }
+
+        for (BookInOrder i : books) {
+            System.out.println(i);
+        }
+
+
     }
 
 }
