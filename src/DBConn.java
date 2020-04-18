@@ -46,6 +46,8 @@ public class DBConn {
                     + orderDate + "\',\'"
                     + payMethod + "\',"
                     + cardNo + ")";
+            stm.executeUpdate(sql);
+            stm.executeUpdate(sql);
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -117,9 +119,29 @@ public class DBConn {
                     "'\n WHERE order_no = '" + orderNo + "' AND book_no = '" + bookNo + "'";
             System.out.println(sql);
             stm.executeUpdate(sql);
-        } catch (SQLException e){
-            e.printStackTrace();;
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
+    }
+
+    public List<String> selectSid() {
+        List<String> sid = new ArrayList<String>();
+        try {
+            Statement stm = conn.createStatement();
+            String sql = "SELECT stu_no FROM STUDENTS";
+            ResultSet rs = stm.executeQuery(sql);
+
+            while (rs.next()) {
+                sid.add(rs.getString(1));
+            }
+            rs.close();
+            stm.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return sid;
     }
 
     public static void main(String[] args) {
