@@ -2,14 +2,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.List;
 
 public class OBS {
-    DBConn db = new DBConn("e8252125", "e8252125");
+    DBConn dbConn = new DBConn("e8252125", "e8252125");
 
     public OBS() {
-        List<String> sids = db.selectSid();
+        List<String> sids = dbConn.selectSid();
 //        List<String> sids = new ArrayList<>();
 //        sids.add("1");
 
@@ -84,7 +83,7 @@ public class OBS {
     }
 
     public void orderMaking(String sid) {
-        List<Order> orders = db.searchOrder(sid);
+        List<Order> orders = dbConn.searchOrder(sid);
         for (Order i : orders) {
             if (i.status == 0 || i.status == 1) {
                 System.out.println("You have outstanding orders!");
