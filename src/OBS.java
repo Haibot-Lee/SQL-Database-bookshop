@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Date;
 import java.util.List;
 
 public class OBS {
@@ -16,7 +17,7 @@ public class OBS {
         homePage.setSize(600, 400);
         homePage.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         Container c = homePage.getContentPane();
-        c.setLayout(new GridLayout(3, 1,20,20));
+        c.setLayout(new GridLayout(3, 1, 20, 20));
         c.add(new JLabel("Welcome to Online University Bookshop! Please choose one function!", SwingConstants.CENTER));
 
         Button b1 = new Button("Order Search");
@@ -91,34 +92,63 @@ public class OBS {
             }
         }
 
-        payMethod();
+        String oid = "";
+
+        String[] payInfo = payMethod();
+        dbConn.orderMaking(oid, sid, new Date(), payInfo[0], payInfo[1]);
 
         JFrame omPage = new JFrame("Order Making");
-        omPage.setSize(800, 1000);
+        omPage.setSize(1000, 800);
         omPage.setLayout(new GridLayout(1, 2));
         Container omc = omPage.getContentPane();
         JTextArea orderInfo = new JTextArea();
-        orderInfo.setSize(400, 1000);
+        orderInfo.setSize(500, 800);
 
-        String books = "1111\n2222\n3333\n4444";
+        String books = "Your books in this order (Order No.:" + oid + "):\n" +
+                "-----------------------------------------------------------------------------------------------\n";
         //将books的信息转换为string --TODO
 
         orderInfo.setText(books);
         omc.add(orderInfo);
-
         Panel addbooks = new Panel();
+        addbooks.setLayout(null);
+        omc.add(addbooks);
+
+        JLabel bookL = new JLabel("Input book No here:");
+        JTextField bookT = new JTextField(100);
+        JLabel qtyL = new JLabel("Input quantity here:");
+        JTextField qtyT = new JTextField(100);
         Button b1 = new Button("Add");
         Button b2 = new Button("Confirm");
         Button b3 = new Button("Cancel");
-        b1.setBounds(650, 50, 100, 40);
-        b2.setBounds(650, 150, 50, 40);
-        b3.setBounds(650, 250, 50, 40);
+        bookL.setBounds(50, 50, 200, 20);
+        bookT.setBounds(50, 80, 100, 20);
+        qtyL.setBounds(50, 120, 200, 20);
+        qtyT.setBounds(50, 150, 100, 20);
+        b1.setBounds(50, 200, 100, 40);
+        b2.setBounds(50, 600, 100, 40);
+        b3.setBounds(300, 600, 100, 40);
+        addbooks.add(bookL);
+        addbooks.add(bookT);
+        addbooks.add(qtyL);
+        addbooks.add(qtyT);
+        ;
+        addbooks.add(b1);
+        addbooks.add(b2);
+        addbooks.add(b3);
 
         omPage.setVisible(true);
     }
 
-    public void payMethod() {
+    public String[] payMethod() {
+        String[] payInfo = new String[2];
 
+        JComboBox<String> pay = new JComboBox<>();
+        JLabel jl = new JLabel("Please choose one method to pay");
+        pay.setSelectedItem(new String[]{"Cash","Credit card"});
+
+
+        return payInfo;
     }
 
     public void orderSearching(String sid) {
