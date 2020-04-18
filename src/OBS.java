@@ -87,12 +87,12 @@ public class OBS {
         List<Order> orders = dbConn.searchOrder(sid);
         for (Order i : orders) {
             if (i.status == 0 || i.status == 1) {
-                System.out.println("You have outstanding orders!");
+                System.out.println("You have outstanding orders! Can't make a new order!");
                 return;
             }
         }
 
-        String oid = "";
+        String oid = "" + sid.charAt(6) + sid.charAt(7) + String.format("%02d", orders.size() % 100) + String.valueOf(new Date().getTime() % 1000000);
 
         String[] payInfo = payMethod();
         dbConn.orderMaking(oid, sid, new Date(), payInfo[0], payInfo[1]);
@@ -110,9 +110,9 @@ public class OBS {
 
         orderInfo.setText(books);
         omc.add(orderInfo);
-        Panel addbooks = new Panel();
-        addbooks.setLayout(null);
-        omc.add(addbooks);
+        Panel addBooks = new Panel();
+        addBooks.setLayout(null);
+        omc.add(addBooks);
 
         JLabel bookL = new JLabel("Input book No here:");
         JTextField bookT = new JTextField(100);
@@ -128,25 +128,67 @@ public class OBS {
         b1.setBounds(50, 200, 100, 40);
         b2.setBounds(50, 600, 100, 40);
         b3.setBounds(300, 600, 100, 40);
-        addbooks.add(bookL);
-        addbooks.add(bookT);
-        addbooks.add(qtyL);
-        addbooks.add(qtyT);
-        ;
-        addbooks.add(b1);
-        addbooks.add(b2);
-        addbooks.add(b3);
+        addBooks.add(bookL);
+        addBooks.add(bookT);
+        addBooks.add(qtyL);
+        addBooks.add(qtyT);
+        addBooks.add(b1);
+        addBooks.add(b2);
+        addBooks.add(b3);
 
         omPage.setVisible(true);
     }
 
     public String[] payMethod() {
-        String[] payInfo = new String[2];
+        String[] payInfo = {null, null};
 
-        JComboBox<String> pay = new JComboBox<>();
-        JLabel jl = new JLabel("Please choose one method to pay");
-        pay.setSelectedItem(new String[]{"Cash","Credit card"});
+        do {
+            JComboBox<String> pay = new JComboBox<>();
+            JLabel jl = new JLabel("Please choose one method to pay");
+            pay.addItem("Credit card");
+            pay.addItem("Bank transfer");
+            pay.addItem("Cash");
+            pay.addItem("Octopus");
+            JPanel panel = new JPanel();
+            panel.setLayout(new GridLayout(3, 1));
+            panel.add(jl);
+            panel.add(pay);
 
+            JOptionPane pane = new JOptionPane(panel) {
+                public void selectInitialValue() {
+                    pay.requestFocusInWindow();
+                }
+            };
+
+            JDialog dialog = pane.createDialog("Pay method");
+            dialog.setVisible(true);
+            dialog.dispose();
+
+            payInfo[0] = (String) pay.getSelectedItem();
+
+            if (payInfo[0].equals("Credit card")) {
+
+                JPanel panel2 = new JPanel();
+                final TextField cardNo = new TextField();
+                panel2.setLayout(new GridLayout(2, 1));
+                panel2.add(new JLabel("Please input your credit card No.:"));
+                panel2.add(cardNo);
+
+                JOptionPane pane2 = new JOptionPane(panel2) {
+                    public void selectInitialValue() {
+                        cardNo.requestFocusInWindow();
+                    }
+                };
+
+                JDialog dialog2 = pane2.createDialog("Credit Card No");
+                dialog2.setVisible(true);
+                dialog2.dispose();
+
+                payInfo[1] = cardNo.getText();
+            }
+            System.out.println(payInfo[0]);
+            System.out.println(payInfo[1]);
+        } while (payInfo[0].equals("Credit card") && (payInfo[1].equals("") || payInfo[1].equals(null)));
 
         return payInfo;
     }
