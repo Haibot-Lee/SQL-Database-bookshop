@@ -36,17 +36,17 @@ public class DBConn {
         }
     }
 
-    public void orderMaking(String orderNo, String stuNo, String orderDate, String payMethod, String cardNo) {
+    public void orderMaking(String orderNo, String stuNo, Date orderDate, String payMethod, String cardNo) {
         try {
             Statement stm = conn.createStatement();
             String sql = "INSERT INTO ORDERS(order_no, stu_no, order_date, pay_method, card_no) VALUES(\'"
                     + orderNo + "\',\'"
                     + stuNo + "\',\'"
-                    + orderDate + "\',\'"
+                    + new SimpleDateFormat("dd-MMM-yyyy").format(orderDate) + "\',\'"
                     + payMethod + "\',"
                     + cardNo + ")";
             stm.executeUpdate(sql);
-            stm.executeUpdate(sql);
+            stm.close();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -97,11 +97,11 @@ public class DBConn {
         return books;
     }
 
-    public void orderUpdate(String orderNo, String bookNo) {
+    public void orderUpdate(String orderNo, String bookNo, Date date) {
         try {
             Statement stm = conn.createStatement();
             String sql = "UPDATE BOOK_IN_ORDERS\n" +
-                    "SET DELIVER_DATE = '" + new SimpleDateFormat("dd-MMM-yyyy").format(new Date()) +
+                    "SET DELIVER_DATE = '" + new SimpleDateFormat("dd-MMM-yyyy").format(date) +
                     "'\n WHERE order_no = '" + orderNo + "' AND book_no = '" + bookNo + "'";
             System.out.println(sql);
             stm.executeUpdate(sql);
@@ -131,7 +131,7 @@ public class DBConn {
     }
 
     public static void main(String[] args) {
-        orderSearchTest();
+        orderMakingTest();
     }
 
 
@@ -149,7 +149,7 @@ public class DBConn {
             System.out.println(i);
         }
 
-        dbConn.orderUpdate("222222221", "002");
+        dbConn.orderUpdate("222222221", "002", new Date());
         System.out.println();
 
         orders = dbConn.searchOrder("22222222");
@@ -166,6 +166,11 @@ public class DBConn {
 
     }
 
+    private static void orderMakingTest() {
+        DBConn dbConn = new DBConn("e8250009", "e8250009");
+        String cardNo = "'asd'";
+        dbConn.orderMaking("234", "11111111", new Date(), "CASH", cardNo);
+    }
 }
 
 // TODO LIST
