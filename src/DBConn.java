@@ -64,7 +64,7 @@ public class DBConn {
     public void addBook(String orderNo, String bookNo, int qty) {
         try {
             CallableStatement cs = conn.prepareCall("{CALL ADD_BOOK_IN_ORDER('" + orderNo +
-                        "', '" + bookNo + "', " + qty + ")}");
+                    "', '" + bookNo + "', " + qty + ")}");
             cs.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -142,6 +142,25 @@ public class DBConn {
         }
 
         return sid;
+    }
+
+    public int selectStock(String bookNo) {
+        int stock = -1;
+        try {
+            Statement stm = conn.createStatement();
+            String sql = "SELECT stock\n" +
+                    "FROM BOOKS\n" +
+                    "WHERE book_no = '" + bookNo + "'";
+            ResultSet rs = stm.executeQuery(sql);
+            while (rs.next()) {
+                stock = rs.getInt(1);
+            }
+            rs.close();
+            stm.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return stock;   // -1: Book does not exist  0: Out of stock  others: Book in stocks
     }
 
     public static void main(String[] args) {

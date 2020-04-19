@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Date;
 import java.util.List;
+
 import org.jdesktop.swingx.JXTreeTable;
 
 public class OBS {
@@ -92,10 +93,8 @@ public class OBS {
         }
 
         String oid = "" + sid.charAt(6) + sid.charAt(7) + String.format("%02d", orders.size() % 100) + new Date().getTime() % 1000000;
-
         String[] payInfo = payMethod();
         dbConn.orderMaking(oid, sid, new Date(), payInfo[0], payInfo[1]);
-
 
         JFrame omPage = new JFrame("Order Making");
         omPage.setSize(1000, 800);
@@ -114,7 +113,7 @@ public class OBS {
         addBooks.setLayout(null);
         omc.add(addBooks);
 
-        JLabel bookL = new JLabel("Input book No here:");
+        JLabel bookL = new JLabel("Input book No. here:");
         JTextField bookT = new JTextField(100);
         JLabel qtyL = new JLabel("Input quantity here:");
         JTextField qtyT = new JTextField(100);
@@ -161,8 +160,6 @@ public class OBS {
 
                 if (addBook(oid, book_no, qty)) {
                     System.out.println("Add books successfully!");
-                } else {
-                    System.out.println("Fail to add books!");
                 }
 
                 omPage.setVisible(true);
@@ -225,11 +222,21 @@ public class OBS {
     }
 
     public boolean addBook(String order_no, String book_no, String qty) {
-        if (book_no.equals("") || qty.equals(""))
+        if (book_no.equals("") || qty.equals("")) {
+            System.out.println("Fail to add books: Please input book No. and quantity! ");
             return false;
+        } else {
+            int stock = dbConn.selectStock(book_no);
+            if (stock == -1) {
+                System.out.println("Fail to add books: Book does not exists! ");
+                return false;
+            } else if (stock < Integer.parseInt(qty)) {
+                System.out.println("Fail to add books: This book is out of stock! Remaining quantity: " + stock);
+                return false;
+            }
+        }
 
-//        dbConn.addBook(order_no, book_no, Integer.parseInt(qty));
-
+        dbConn.addBook(order_no, book_no, Integer.parseInt(qty));
         return true;
     }
 
@@ -238,7 +245,7 @@ public class OBS {
         List<Order> orders = dbConn.searchOrder(sid);   // A List of Order
         List[] bookInOrders = new List[orders.size()];  // An array of Lists of bookInOrder
 
-        for (int i=0; i<orders.size(); i++) {
+        for (int i = 0; i < orders.size(); i++) {
             bookInOrders[i] = dbConn.searchBookInOrder(orders.get(i).orderNo);
         }
 
@@ -249,8 +256,6 @@ public class OBS {
         Container osc = osPage.getContentPane();
 
         JXTreeTable orderInfo = new OrderInfoTable(orders, bookInOrders).getTreeTable();
-
-
 
 
         orderInfo.setBounds(0, 0, 600, 1000);
