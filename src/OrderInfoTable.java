@@ -21,25 +21,6 @@ public class OrderInfoTable {
     private DefaultTreeTableModel model;
     private JXTreeTable table;
 
-    class Node extends AbstractMutableTreeTableNode {
-        public Node(Object[] data) {
-            super(data);
-        }
-
-        public int getColumnCount() {
-            return getData().length;
-        }
-
-        public Object getValueAt(int col) {
-            return getData()[col];
-        }
-
-        public Object[] getData() {
-            return (Object[]) getUserObject();
-        }
-
-    }
-
 
 
     public OrderInfoTable(List<Order> orders, List<BookInOrder>[] bookInOrders) {
