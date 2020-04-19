@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.sql.CallableStatement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,8 +54,21 @@ public class DBConn {
         }
     }
 
+    /**
+     * Add %qty% books into the designated order.
+     *
+     * @param orderNo ORDER_NO
+     * @param bookNo  BOOK_NO
+     * @param qty     quantity to add
+     */
     public void addBook(String orderNo, String bookNo, int qty) {
-
+        try {
+            CallableStatement cs = conn.prepareCall("{CALL ADD_BOOK_IN_ORDER('" + orderNo +
+                        "', '" + bookNo + "', " + qty + ")}");
+            cs.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public List<Order> searchOrder(String stuNo) {
@@ -81,8 +95,8 @@ public class DBConn {
         List<BookInOrder> books = new ArrayList<BookInOrder>();
         try {
             Statement stm = conn.createStatement();
-            String sql = "SELECT *\n" +
-                    "FROM BOOK_IN_ORDERS BO\n" +
+            String sql = "SELECT book_no, title, qty, deliver_date\n" +
+                    "FROM BOOK_IN_ORDERS BO NATURAL JOIN BOOKS\n" +
                     "WHERE BO.order_no = '" + orderNo + "'";
             ResultSet rs = stm.executeQuery(sql);
             while (rs.next()) {
