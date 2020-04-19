@@ -46,14 +46,17 @@ public class OBS {
     }
 
     public String login(List<String> sids) {
-        boolean ifexist = false;
+        boolean ifexist = true;
         String sid;
         do {
             JPanel panel = new JPanel();
             final TextField sidField = new TextField();
-            panel.setLayout(new GridLayout(2, 1));
+            panel.setLayout(new GridLayout(3, 1));
             panel.add(new JLabel("Please login with your student ID:"));
             panel.add(sidField);
+            JLabel jl = new JLabel("Students does not exist!");
+            jl.setVisible(!ifexist);
+            panel.add(jl);
 
             JOptionPane pane = new JOptionPane(panel) {
                 public void selectInitialValue() {
@@ -67,15 +70,12 @@ public class OBS {
 
             sid = sidField.getText();
 
+            ifexist = false;
             for (String i : sids) {
                 if (i.equals(sid)) {
                     ifexist = true;
                     break;
                 }
-            }
-
-            if (!ifexist) {
-                System.out.println("Students does not exist!");
             }
 
         } while (!ifexist);
