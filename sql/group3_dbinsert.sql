@@ -24,7 +24,7 @@ CREATE TABLE ORDERS
     order_no    CHAR(10),
     stu_no      CHAR(8)     NOT NULL,
     order_date  DATE        NOT NULL,
-    status      INT  DEFAULT 0,        -- 0可以取消，1不可取消，2completed， 3canceled
+    status      INT  DEFAULT 0, -- 0可以取消，1不可取消，2completed， 3canceled
     total_price REAL DEFAULT 0,
     pay_method  VARCHAR(30) not null,
     card_no     CHAR(16),
@@ -138,11 +138,14 @@ END;
 /
 
 
-CREATE OR REPLACE PROCEDURE add_book_in_order (o_no CHAR, b_no CHAR, add_qty INT) AS
+CREATE OR REPLACE PROCEDURE add_book_in_order(o_no CHAR, b_no CHAR, add_qty INT) AS
     cnt INT;
 BEGIN
-    SELECT COUNT(*) INTO cnt FROM BOOK_IN_ORDERS
-    WHERE order_no = o_no AND book_no = b_no;
+    SELECT COUNT(*)
+    INTO cnt
+    FROM BOOK_IN_ORDERS
+    WHERE order_no = o_no
+      AND book_no = b_no;
     IF cnt = 0 THEN
         INSERT INTO BOOK_IN_ORDERS
         VALUES (o_no, b_no, add_qty, NULL);
@@ -168,17 +171,15 @@ INSERT INTO BOOKS
 VALUES ('003', 'Harry Potter III', 'J. K. Rowling', 400, 20);
 
 INSERT INTO ORDERS
-VALUES ('222222221', '22222222', '02-APR-2020', 0, 0, 'Credit Card', '123456789');
+VALUES ('2201123456', '22222222', '02-APR-2020', 0, 0, 'Credit Card', '123456789');
 INSERT INTO ORDERS
-VALUES ('111111111', '11111111', '07-APR-2020', 0, 30, 'Credit Card', '987654321');
+VALUES ('1101123456', '11111111', '07-APR-2020', 0, 30, 'Credit Card', '987654321');
 
 INSERT INTO BOOK_IN_ORDERS
-VALUES ('222222221', '001', 1, '9-APR-2020');
+VALUES ('2201123456', '001', 1, '9-APR-2020');
 INSERT INTO BOOK_IN_ORDERS
-VALUES ('222222221', '002', 1, NULL);
+VALUES ('2201123456', '002', 1, NULL);
 INSERT INTO BOOK_IN_ORDERS
-VALUES ('111111111', '002', 1, NULL);
+VALUES ('1101123456', '002', 1, NULL);
 
 COMMIT;
-
--- UPDATE ORDERS SET status = 1 WHERE status = 0;
