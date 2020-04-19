@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Date;
 import java.util.List;
+import org.jdesktop.swingx.JXTreeTable;
 
 public class OBS {
     DBConn dbConn = new DBConn("e8252125", "e8252125");
@@ -194,18 +195,32 @@ public class OBS {
     }
 
     public void orderSearching(String sid) {
+        // Retrieve data from DB
+        List<Order> orders = dbConn.searchOrder(sid);   // A List of Order
+        List[] bookInOrders = new List[orders.size()];  // An array of Lists of bookInOrder
+
+        for (int i=0; i<orders.size(); i++) {
+            bookInOrders[i] = dbConn.searchBookInOrder(orders.get(i).orderNo);
+        }
+
+
         JFrame osPage = new JFrame("All of your orders");
         osPage.setLayout(null);
         osPage.setSize(800, 1000);
         Container osc = osPage.getContentPane();
-        JTextArea orderInfo = new JTextArea();
+
+        JXTreeTable orderInfo = new OrderInfoTable(orders, bookInOrders).getTreeTable();
+
+
+
+
         orderInfo.setBounds(0, 0, 600, 1000);
 
-        String orders = "1111\n2222\n3333\n4444";
-        //将order的信息转换为string --TODO
 
-        orderInfo.setText(orders);
+//        orderInfo.setText(orders);
         osc.add(orderInfo);
+        // Order Display (TreeTable)
+
 
         Button b1 = new Button("Order Update");
         Button b2 = new Button("Order Cancelling");
