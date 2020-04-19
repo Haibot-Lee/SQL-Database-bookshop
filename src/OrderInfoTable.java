@@ -3,13 +3,8 @@
  */
 
 import org.jdesktop.swingx.JXTreeTable;
-import org.jdesktop.swingx.treetable.AbstractMutableTreeTableNode;
 import org.jdesktop.swingx.treetable.DefaultTreeTableModel;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.print.Book;
-import java.util.ArrayList;
+import javax.swing.tree.TreePath;
 import java.util.Arrays;
 import java.util.List;
 
@@ -32,10 +27,10 @@ public class OrderInfoTable {
                     String.valueOf(o.totalPrice), o.payMethod, o.cardNo});
             root.add(order);
             // Add books under current order
-            String[] subheadings = {"", "Book No.", "Title", "Quantity", "Delivery"};
-            order.add(new Node (subheadings));
+            String[] subheadings = {"Order No.", "Book No.", "Title", "Quantity", "Delivery"};
+            order.add(new Node(subheadings));
             for (BookInOrder b : bookInOrders[i]) {
-                Node book = new Node (new String[] {"", b.bookNo, b.title, String.valueOf(b.qty),
+                Node book = new Node (new String[] {o.orderNo, b.bookNo, b.title, String.valueOf(b.qty),
                         b.deliverDate == null ? "Pending Delivery" : b.deliverDate.toString()});
                 order.add(book);
             }
@@ -44,18 +39,18 @@ public class OrderInfoTable {
         model = new DefaultTreeTableModel(root, Arrays.asList(headings));
         table = new JXTreeTable(model);
         table.setShowGrid(true, true);
+        // TODO: Change colors of the subheadings
 
         table.packAll();
+        // TODO: Disable selection for subheadings
     }
 
     public JXTreeTable getTreeTable() {
-
-
         return table;
     }
 
-    public void addRow() {
-
+    public Node getNode(TreePath path) {
+        return (Node) path.getLastPathComponent();
     }
 //    public static void main(String[] args) {
 //        JFrame testFrame = new JFrame();
