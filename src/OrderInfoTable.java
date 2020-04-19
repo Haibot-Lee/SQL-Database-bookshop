@@ -47,12 +47,16 @@ public class OrderInfoTable {
         for (int i=0; i<orders.size(); i++) {
             // Append current order info to root
             Order o = orders.get(i);
-            Node curr = new Node(new String[] {o.orderNo, o.stuNo, o.orderDate.toString(), String.valueOf(o.status),
+            Node order = new Node(new String[] {o.orderNo, o.stuNo, o.orderDate.toString(), String.valueOf(o.status),
                     String.valueOf(o.totalPrice), o.payMethod, o.cardNo});
-            root.add(curr);
+            root.add(order);
             // Add books under current order
+            String[] subheadings = {"", "Book No.", "Title", "Quantity", "Delivery"};
+            order.add(new Node (subheadings));
             for (BookInOrder b : bookInOrders[i]) {
-                // Todo: add book.
+                Node book = new Node (new String[] {"", b.bookNo, b.title, String.valueOf(b.qty),
+                        b.deliverDate == null ? "Pending Delivery" : b.deliverDate.toString()});
+                order.add(book);
             }
         }
 
