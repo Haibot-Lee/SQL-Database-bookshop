@@ -1,4 +1,7 @@
 import javax.swing.*;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,6 +12,9 @@ import org.jdesktop.swingx.JXTreeTable;
 
 public class OBS {
     DBConn dbConn = new DBConn("e8252125", "e8252125");
+
+//    DBConn dbConn = new DBConn("e8250009", "e8250009", "faith.comp.hkbu.edu.hk", 22,
+//            "e825xxxx", "********");
 
     public OBS() {
         List<String> sids = dbConn.selectSid();
@@ -247,32 +253,61 @@ public class OBS {
             bookInOrders[i] = dbConn.searchBookInOrder(orders.get(i).orderNo);
         }
 
-
+        // Display settings
         JFrame osPage = new JFrame("All of your orders");
         osPage.setLayout(null);
         osPage.setSize(800, 1000);
         Container osc = osPage.getContentPane();
-        JXTreeTable orderInfo = new OrderInfoTable(orders, bookInOrders).getTreeTable();
 
+        OrderInfoTable table = new OrderInfoTable(orders, bookInOrders);
+        JXTreeTable jxTable = table.getTreeTable();
 
-        orderInfo.setBounds(0, 0, 600, 1000);
-
-
-//        orderInfo.setText(orders);
-        osc.add(orderInfo);
-        // Order Display (TreeTable)
-
+        JScrollPane pane = new JScrollPane(jxTable);
+        pane.setBounds(0, 0, 600, 1000);
+        osc.add(pane);
 
         Button b1 = new Button("Order Update");
         Button b2 = new Button("Order Cancelling");
+        b1.setEnabled(false);
+        b2.setEnabled(false);
         b1.setBounds(650, 50, 100, 40);
         b2.setBounds(650, 150, 100, 40);
         osc.add(b1);
         osc.add(b2);
 
+        // Row selection
+        int selectedType;   // 0: invalid; 1: Order; 2: Book
+        final String[] orderNo = new String[1];
+        final String[] bookNo = new String[1];
+        jxTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);    // Single selection allowed only
+
+        jxTable.addTreeSelectionListener(new TreeSelectionListener() {
+            @Override
+            public void valueChanged(TreeSelectionEvent treeSelectionEvent) {
+                int selectedRow = jxTable.getSelectedRow();
+                TreePath path = jxTable.getPathForRow(selectedRow);
+                Node selectedNode = table.getNode(path);
+
+                orderNo[0] = jxTable.getStringAt(selectedRow, 0);
+                bookNo[0] = jxTable.getStringAt(selectedRow, 1);
+
+                System.out.println(orderNo[0]);
+                System.out.println(bookNo[0]);
+                if (selectedNode.isLeaf()) {    // Book selected
+                    b1.setEnabled(true);
+                    b2.setEnabled(false);
+                } else {    // Order selected
+                    b1.setEnabled(false);
+                    b2.setEnabled(true);
+                }
+            }
+        });
+
+
         b1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                orderUpdate(sid);
+                updateOrder(orderNo[0], bookNo[0]);
+                // TODO: REFRESH AFTER UPDATE!
             }
         });
 
@@ -286,8 +321,9 @@ public class OBS {
 
     }
 
-    public void orderUpdate(String sid) {
-
+    public void updateOrder(String orderNo, String bookNo) {
+        dbConn.orderUpdate(orderNo, bookNo, new Date());
+        // TODO Handle exceptions
     }
 
     public void orderCancelling(String sid) {
