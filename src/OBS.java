@@ -11,8 +11,6 @@ public class OBS {
 
     public OBS() {
         List<String> sids = dbConn.selectSid();
-//        List<String> sids = new ArrayList<>();
-//        sids.add("1");
 
         JFrame homePage = new JFrame("Online University Bookshop");
         homePage.setSize(600, 400);
@@ -76,7 +74,7 @@ public class OBS {
             }
 
             if (!ifexist) {
-                System.out.println("Students does not exist!"); //TODO 改为弹窗的形式
+                System.out.println("Students does not exist!");
             }
 
         } while (!ifexist);
@@ -93,10 +91,11 @@ public class OBS {
             }
         }
 
-        String oid = "" + sid.charAt(6) + sid.charAt(7) + String.format("%02d", orders.size() % 100) + String.valueOf(new Date().getTime() % 1000000);
+        String oid = "" + sid.charAt(6) + sid.charAt(7) + String.format("%02d", orders.size() % 100) + new Date().getTime() % 1000000;
 
         String[] payInfo = payMethod();
         dbConn.orderMaking(oid, sid, new Date(), payInfo[0], payInfo[1]);
+
 
         JFrame omPage = new JFrame("Order Making");
         omPage.setSize(1000, 800);
@@ -136,8 +135,40 @@ public class OBS {
         addBooks.add(b1);
         addBooks.add(b2);
         addBooks.add(b3);
-
         omPage.setVisible(true);
+
+        bookT.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                bookT.requestFocusInWindow();
+            }
+        });
+
+        qtyT.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                bookT.requestFocusInWindow();
+            }
+        });
+
+        b1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String book_no = bookT.getText();
+                String qty = qtyT.getText();
+                bookT.setText("");
+                qtyT.setText("");
+
+                if (addBook(oid, book_no, qty)) {
+                    System.out.println("Add books successfully!");
+                } else {
+                    System.out.println("Fail to add books!");
+                }
+
+                omPage.setVisible(true);
+            }
+        });
+
     }
 
     public String[] payMethod() {
@@ -187,11 +218,19 @@ public class OBS {
 
                 payInfo[1] = cardNo.getText();
             }
-            System.out.println(payInfo[0]);
-            System.out.println(payInfo[1]);
-        } while (payInfo[0].equals("Credit card") && (payInfo[1].equals("") || payInfo[1].equals(null)));
+
+        } while (payInfo[0].equals("Credit card") && payInfo[1].equals(""));
 
         return payInfo;
+    }
+
+    public boolean addBook(String order_no, String book_no, String qty) {
+        if (book_no.equals("") || qty.equals(""))
+            return false;
+
+//        dbConn.addBook(order_no, book_no, Integer.parseInt(qty));
+
+        return true;
     }
 
     public void orderSearching(String sid) {
