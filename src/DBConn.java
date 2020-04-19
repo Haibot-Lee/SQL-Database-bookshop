@@ -10,6 +10,11 @@ import java.sql.CallableStatement;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
+import java.util.Properties;
+
 public class DBConn {
     private Connection conn;
     // Database Host
@@ -21,12 +26,25 @@ public class DBConn {
     private String jdbcHost = dbHost;
     private int jdbcPort = dbPort;
 
+    private Session proxySession;
+    private String fwHost = "localhost";
+    private int fwPort;
+
     public DBConn(String dbuser, String dbpw) {
         loginDB(dbuser, dbpw);
     }
 
+    public DBConn(String dbUser, String dbPw, String proxyHost, int proxyPort, String proxyUser, String proxyPw) {
+        loginProxy(proxyHost, proxyPort, proxyUser, proxyPw);
+        loginDB(dbUser, dbPw);
+
+        // TODO: Handle exceptions, such as network failure. Consider GUI. Maybe let the
+        //      two method throw exceptions instead of returning booleans?
+    }
+
     public boolean loginDB(String dbuser, String dbpw) {
         String url = "jdbc:oracle:thin:@" + jdbcHost + ":" + jdbcPort + "/" + database;
+        System.out.println("Logging in database: " + url);
         try {
             conn = DriverManager.getConnection(url, dbuser, dbpw);
             System.out.println("Database connected: " + database);
@@ -36,6 +54,31 @@ public class DBConn {
             return false;
         }
     }
+
+
+    public boolean loginProxy(String host, int port, String user, String pw) {
+        System.out.println("Logging in proxy: " + host + ":" + port);
+        try {
+            proxySession = new JSch().getSession(user, host, port);
+            proxySession.setPassword(pw);
+
+            Properties config = new Properties();
+            config.put("StrictHostKeyChecking", "no");
+            proxySession.setConfig(config);
+
+            proxySession.connect();
+            proxySession.setPortForwardingL(fwHost, 0, dbHost, dbPort);
+            fwPort = Integer.parseInt(proxySession.getPortForwardingL()[0].split(":")[0]);
+
+        } catch (JSchException e) {
+            e.printStackTrace();
+            return false;
+        }
+        jdbcHost = fwHost;
+        jdbcPort = fwPort;
+        return true;
+    }
+
 
     public void orderMaking(String orderNo, String stuNo, Date orderDate, String payMethod, String cardNo) {
         try {
