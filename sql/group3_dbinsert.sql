@@ -154,7 +154,22 @@ BEGIN
     END IF;
 END;
 
-
+CREATE OR REPLACE PROCEDURE update_status_books_and_order(o_no CHAR, b_no CHAR, day Date) AS
+    cnt  INT;
+BEGIN
+    UPDATE BOOK_IN_ORDERS SET DELIVER_DATE = day
+    WHERE order_no = o_no AND book_no = b_no;
+    SELECT COUNT(*)
+    INTO cnt
+    FROM BOOK_IN_ORDERS
+    WHERE order_no = o_no
+      AND deliver_date IS NULL;
+    IF cnt = 0 THEN
+        UPDATE ORDERS SET status=2 WHERE order_no = o_no;
+    ELSIF cnt > 0 THEN
+        UPDATE ORDERS SET status=1 WHERE order_no = o_no;
+END IF;
+END;
 
 INSERT INTO STUDENTS
 VALUES ('11111111', 'Kurt', 'M', 'COMP', 1630, 0.1);
@@ -177,6 +192,8 @@ VALUES ('1101123456', '11111111', '07-APR-2020', 0, 30, 'Credit Card', '98765432
 
 INSERT INTO BOOK_IN_ORDERS
 VALUES ('2201123456', '001', 1, '9-APR-2020');
+UPDATE ORDERS SET status=1 WHERE order_no='2201123456';
+
 INSERT INTO BOOK_IN_ORDERS
 VALUES ('2201123456', '002', 1, NULL);
 INSERT INTO BOOK_IN_ORDERS

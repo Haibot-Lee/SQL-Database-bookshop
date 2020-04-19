@@ -66,6 +66,7 @@ public class DBConn {
             CallableStatement cs = conn.prepareCall("{CALL ADD_BOOK_IN_ORDER('" + orderNo +
                     "', '" + bookNo + "', " + qty + ")}");
             cs.executeUpdate();
+            cs.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -113,12 +114,10 @@ public class DBConn {
 
     public void orderUpdate(String orderNo, String bookNo, Date date) {
         try {
-            Statement stm = conn.createStatement();
-            String sql = "UPDATE BOOK_IN_ORDERS\n" +
-                    "SET DELIVER_DATE = '" + new SimpleDateFormat("dd-MMM-yyyy").format(date) +
-                    "'\n WHERE order_no = '" + orderNo + "' AND book_no = '" + bookNo + "'";
-            System.out.println(sql);
-            stm.executeUpdate(sql);
+            CallableStatement cs = conn.prepareCall("{CALL update_status_books_and_order('" + orderNo +
+                    "', '" + bookNo + "', " + date + ")}");
+            cs.executeUpdate();
+            cs.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
