@@ -17,7 +17,7 @@ public class OBS {
         homePage.setSize(600, 400);
         homePage.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         Container c = homePage.getContentPane();
-        c.setLayout(new GridLayout(3, 1, 20, 20));
+        c.setLayout(new GridLayout(4, 1, 20, 20));
         c.add(new JLabel("Welcome to Online University Bookshop! Please choose one function!", SwingConstants.CENTER));
 
         Button b1 = new Button("Order Search");
@@ -27,19 +27,20 @@ public class OBS {
         c.add(b1);
         c.add(b2);
 
-        b1.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                String sid = login(sids);
-                orderSearching(sid);
+        JLabel jl = new JLabel("You have outstanding orders! Can't make a new order!", SwingConstants.CENTER);
+        c.add(jl);
+        jl.setVisible(false);
 
-            }
+        b1.addActionListener(e -> {
+            String sid = login(sids);
+            orderSearching(sid);
+
         });
 
-        b2.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                String sid = login(sids);
-                orderMaking(sid);
-            }
+        b2.addActionListener(e -> {
+            jl.setVisible(false);
+            String sid = login(sids);
+            jl.setVisible(!orderMaking(sid));
         });
 
         homePage.setVisible(true);
@@ -83,12 +84,11 @@ public class OBS {
         return sid;
     }
 
-    public void orderMaking(String sid) {
+    public boolean orderMaking(String sid) {
         List<Order> orders = dbConn.searchOrder(sid);
         for (Order i : orders) {
             if (i.status == 0 || i.status == 1) {
-                System.out.println("You have outstanding orders! Can't make a new order!");
-                return;
+                return false;
             }
         }
 
@@ -99,6 +99,7 @@ public class OBS {
         JFrame omPage = new JFrame("Order Making");
         omPage.setSize(1000, 800);
         omPage.setLayout(new GridLayout(1, 2));
+        omPage.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         Container omc = omPage.getContentPane();
         JTextArea orderInfo = new JTextArea();
         orderInfo.setSize(500, 800);
@@ -119,53 +120,53 @@ public class OBS {
         JTextField qtyT = new JTextField(100);
         Button b1 = new Button("Add");
         Button b2 = new Button("Confirm");
-        Button b3 = new Button("Cancel");
         bookL.setBounds(50, 50, 200, 20);
         bookT.setBounds(50, 80, 100, 20);
         qtyL.setBounds(50, 120, 200, 20);
         qtyT.setBounds(50, 150, 100, 20);
         b1.setBounds(50, 200, 100, 40);
         b2.setBounds(50, 600, 100, 40);
-        b3.setBounds(300, 600, 100, 40);
         addBooks.add(bookL);
         addBooks.add(bookT);
         addBooks.add(qtyL);
         addBooks.add(qtyT);
         addBooks.add(b1);
         addBooks.add(b2);
-        addBooks.add(b3);
+
+        JLabel ifAdd = new JLabel();
+        ifAdd.setBounds(50, 260, 500, 20);
+        addBooks.add(ifAdd);
+        ifAdd.setVisible(false);
+
+
         omPage.setVisible(true);
 
-        bookT.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                bookT.requestFocusInWindow();
-            }
+        bookT.addActionListener(e -> bookT.requestFocusInWindow());
+
+        qtyT.addActionListener(e -> bookT.requestFocusInWindow());
+
+        b1.addActionListener(e -> {
+            String book_no = bookT.getText();
+            String qty = qtyT.getText();
+            bookT.setText("");
+            qtyT.setText("");
+
+            int conditions = addBook(oid, book_no, qty);
+            if (conditions == -1)
+                ifAdd.setText("Add books successfully!");
+            else if (conditions == -2)
+                ifAdd.setText("Fail to add books: Please input book No. and quantity!");
+            else if (conditions == -3)
+                ifAdd.setText("Fail to add books: Book does not exists!");
+            else
+                ifAdd.setText("Fail to add books: This book(book No:" + book_no + ") is out of stock! Remaining quantity: " + conditions);
+
+            ifAdd.setVisible(true);
         });
 
-        qtyT.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                bookT.requestFocusInWindow();
-            }
-        });
+        b2.addActionListener(e -> omPage.dispose());
 
-        b1.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String book_no = bookT.getText();
-                String qty = qtyT.getText();
-                bookT.setText("");
-                qtyT.setText("");
-
-                if (addBook(oid, book_no, qty)) {
-                    System.out.println("Add books successfully!");
-                }
-
-                omPage.setVisible(true);
-            }
-        });
-
+        return true;
     }
 
     public String[] payMethod() {
@@ -221,23 +222,20 @@ public class OBS {
         return payInfo;
     }
 
-    public boolean addBook(String order_no, String book_no, String qty) {
-        if (book_no.equals("") || qty.equals("")) {
-            System.out.println("Fail to add books: Please input book No. and quantity! ");
-            return false;
-        } else {
+    public int addBook(String order_no, String book_no, String qty) {
+        if (book_no.equals("") || qty.equals(""))
+            return -2;
+        else {
             int stock = dbConn.selectStock(book_no);
-            if (stock == -1) {
-                System.out.println("Fail to add books: Book does not exists! ");
-                return false;
-            } else if (stock < Integer.parseInt(qty)) {
-                System.out.println("Fail to add books: This book is out of stock! Remaining quantity: " + stock);
-                return false;
-            }
+            if (stock == -1)
+                return -3;
+            else if (stock < Integer.parseInt(qty))
+                return stock;
+
         }
 
         dbConn.addBook(order_no, book_no, Integer.parseInt(qty));
-        return true;
+        return -1;
     }
 
     public void orderSearching(String sid) {
@@ -245,7 +243,7 @@ public class OBS {
         List<Order> orders = dbConn.searchOrder(sid);   // A List of Order
         List<BookInOrder>[] bookInOrders = new List[orders.size()];  // An array of Lists of bookInOrder
         // Get bookInOrder for every order
-        for (int i=0; i<orders.size(); i++) {
+        for (int i = 0; i < orders.size(); i++) {
             bookInOrders[i] = dbConn.searchBookInOrder(orders.get(i).orderNo);
         }
 
