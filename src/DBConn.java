@@ -95,8 +95,8 @@ public class DBConn {
         List<BookInOrder> books = new ArrayList<BookInOrder>();
         try {
             Statement stm = conn.createStatement();
-            String sql = "SELECT *\n" +
-                    "FROM BOOK_IN_ORDERS BO\n" +
+            String sql = "SELECT book_no, title, qty, deliver_date\n" +
+                    "FROM BOOK_IN_ORDERS BO NATURAL JOIN BOOKS\n" +
                     "WHERE BO.order_no = '" + orderNo + "'";
             ResultSet rs = stm.executeQuery(sql);
             while (rs.next()) {
