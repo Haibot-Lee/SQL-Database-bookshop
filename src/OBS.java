@@ -243,9 +243,9 @@ public class OBS {
     public void orderSearching(String sid) {
         // Retrieve data from DB
         List<Order> orders = dbConn.searchOrder(sid);   // A List of Order
-        List[] bookInOrders = new List[orders.size()];  // An array of Lists of bookInOrder
-
-        for (int i = 0; i < orders.size(); i++) {
+        List<BookInOrder>[] bookInOrders = new List[orders.size()];  // An array of Lists of bookInOrder
+        // Get bookInOrder for every order
+        for (int i=0; i<orders.size(); i++) {
             bookInOrders[i] = dbConn.searchBookInOrder(orders.get(i).orderNo);
         }
 
@@ -254,7 +254,6 @@ public class OBS {
         osPage.setLayout(null);
         osPage.setSize(800, 1000);
         Container osc = osPage.getContentPane();
-
         JXTreeTable orderInfo = new OrderInfoTable(orders, bookInOrders).getTreeTable();
 
 
