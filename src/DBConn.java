@@ -157,9 +157,14 @@ public class DBConn {
 
     public void orderUpdate(String orderNo, String bookNo, Date date) {
         try {
-            CallableStatement cs = conn.prepareCall("{CALL update_status_books_and_order('" + orderNo +
-                    "', '" + bookNo + "', " + date + ")}");
-            cs.executeUpdate();
+            CallableStatement cs = conn.prepareCall("{CALL update_status_books_and_order(?,?,?)}");
+            cs.setString(1, orderNo);
+            cs.setString(2, bookNo);
+            cs.setDate(3, new java.sql.Date(new Date().getTime()));
+            System.out.println("call prepared");
+
+            cs.execute();
+            System.out.println("executed");
             cs.close();
         } catch (SQLException e) {
             e.printStackTrace();
