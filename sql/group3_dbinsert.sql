@@ -153,6 +153,8 @@ BEGIN
         UPDATE BOOK_IN_ORDERS SET QTY = QTY + add_qty WHERE order_no = o_no AND book_no = b_no;
     END IF;
 END;
+.
+/
 
 CREATE OR REPLACE PROCEDURE update_status_books_and_order(o_no CHAR, b_no CHAR, day Date) AS
     cnt  INT;
@@ -168,8 +170,10 @@ BEGIN
         UPDATE ORDERS SET status=2 WHERE order_no = o_no;
     ELSIF cnt > 0 THEN
         UPDATE ORDERS SET status=1 WHERE order_no = o_no;
-END IF;
+    END IF;
 END;
+.
+/
 
 INSERT INTO STUDENTS
 VALUES ('11111111', 'Kurt', 'M', 'COMP', 1630, 0.1);
