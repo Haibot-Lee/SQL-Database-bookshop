@@ -7,6 +7,7 @@ import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -60,6 +61,7 @@ public class OrderSearchWindow {
             public void valueChanged(TreeSelectionEvent treeSelectionEvent) {
                 int selectedRow = jxTable.getSelectedRow();
                 TreePath path = jxTable.getPathForRow(selectedRow);
+                if (path == null)  return;      // to prevent trigger this listener when refreshing the table
                 Node selectedNode = table.getNode(path);
 
                 orderNo[0] = jxTable.getStringAt(selectedRow, 0);
@@ -106,13 +108,15 @@ public class OrderSearchWindow {
 
     public void refresh() {
         getData();
-        osc.remove(pane);
-        table = new OrderInfoTable(orders, bookInOrders);
-        jxTable = table.getTreeTable();
-        pane = new JScrollPane(table.getTreeTable());
-        pane.setBounds(0, 0, 600, 1000);
-        osc.add(pane);
-        osc.setVisible(true);
+        List<Integer> expandedRows = new ArrayList<>();
+
+        for (int i=0; i<jxTable.getRowCount(); i++) {
+            if (jxTable.isExpanded(i))  expandedRows.add(i);
+        }
+        table.refresh(orders, bookInOrders);
+        for (int i : expandedRows) {
+            jxTable.expandRow(i);
+        }
     }
 
     private void updateOrder(String orderNo, String bookNo) {

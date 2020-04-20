@@ -15,10 +15,20 @@ public class OrderInfoTable {
     private Node root;
     private DefaultTreeTableModel model;
     private JXTreeTable table;
+    private List<Order> orders;
+    private List<BookInOrder>[] bookInOrders;
 
 
 
     public OrderInfoTable(List<Order> orders, List<BookInOrder>[] bookInOrders) {
+        this.orders = orders;
+        this.bookInOrders = bookInOrders;
+        createTree();
+        createModel();
+        createTable();
+    }
+
+    private void createTree() {
         root = new Node(new String[] {"root"});
         for (int i=0; i<orders.size(); i++) {
             // Append current order info to root
@@ -35,18 +45,30 @@ public class OrderInfoTable {
                 order.add(book);
             }
         }
+    }
 
+    public void createModel() {
         model = new DefaultTreeTableModel(root, Arrays.asList(headings));
+    }
+
+    public void createTable() {
         table = new JXTreeTable(model);
         table.setShowGrid(true, true);
         // TODO: Change colors of the subheadings
-
         table.packAll();
         // TODO: Disable selection for subheadings
     }
 
     public JXTreeTable getTreeTable() {
         return table;
+    }
+
+    public void refresh(List<Order> orders, List<BookInOrder>[] bookInOrders) {
+        this.orders = orders;
+        this.bookInOrders = bookInOrders;
+        createTree();
+        model.setRoot(root);
+        table.updateUI();
     }
 
     public Node getNode(TreePath path) {
