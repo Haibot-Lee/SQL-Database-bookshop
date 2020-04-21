@@ -43,12 +43,12 @@ public class OrderSearchWindow {
     private void initialize() {
         osPage = new JFrame("All of your orders");
         osPage.setLayout(null);
-        osPage.setSize(800, 1000);
+        osPage.setSize(1000, 800);
         osc = osPage.getContentPane();
         table = new OrderInfoTable(orders, bookInOrders);
         jxTable = table.getTreeTable();
         pane = new JScrollPane(table.getTreeTable());
-        pane.setBounds(0, 0, 600, 1000);
+        pane.setBounds(0, 0, 800, 800);
 
         // Row selection
         int selectedType;   // 0: invalid; 1: Order; 2: Book
@@ -61,7 +61,7 @@ public class OrderSearchWindow {
             public void valueChanged(TreeSelectionEvent treeSelectionEvent) {
                 int selectedRow = jxTable.getSelectedRow();
                 TreePath path = jxTable.getPathForRow(selectedRow);
-                if (path == null)  return;      // to prevent trigger this listener when refreshing the table
+                if (path == null) return;      // to prevent trigger this listener when refreshing the table
                 Node selectedNode = table.getNode(path);
 
                 orderNo[0] = jxTable.getStringAt(selectedRow, 0);
@@ -83,8 +83,8 @@ public class OrderSearchWindow {
         b2 = new Button("Order Cancelling");
         b1.setEnabled(false);
         b2.setEnabled(false);
-        b1.setBounds(650, 50, 100, 40);
-        b2.setBounds(650, 150, 100, 40);
+        b1.setBounds(840, 50, 100, 40);
+        b2.setBounds(840, 150, 100, 40);
         b1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 updateOrder(orderNo[0], bookNo[0]);
@@ -102,7 +102,6 @@ public class OrderSearchWindow {
         osc.add(b1);
         osc.add(b2);
         osc.add(pane);
-
         osPage.setVisible(true);
     }
 
@@ -110,8 +109,8 @@ public class OrderSearchWindow {
         getData();
         List<Integer> expandedRows = new ArrayList<>();
 
-        for (int i=0; i<jxTable.getRowCount(); i++) {
-            if (jxTable.isExpanded(i))  expandedRows.add(i);
+        for (int i = 0; i < jxTable.getRowCount(); i++) {
+            if (jxTable.isExpanded(i)) expandedRows.add(i);
         }
         table.refresh(orders, bookInOrders);
         for (int i : expandedRows) {
