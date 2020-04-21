@@ -101,76 +101,7 @@ public class OBS {
         String oid = "" + sid.charAt(6) + sid.charAt(7) + String.format("%02d", orders.size() % 100) + new Date().getTime() % 1000000;
         String[] payInfo = payMethod();
         dbConn.orderMaking(oid, sid, new Date(), payInfo[0], payInfo[1]);
-
-        JFrame omPage = new JFrame("Order Making");
-        omPage.setSize(1000, 800);
-        omPage.setLayout(new GridLayout(1, 2));
-        omPage.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        Container omc = omPage.getContentPane();
-        JTextArea orderInfo = new JTextArea();
-        orderInfo.setSize(500, 800);
-
-        String books = "Your books in this order (Order No.:" + oid + "):\n" +
-                "-----------------------------------------------------------------------------------------------\n";
-        //将books的信息转换为string --TODO
-
-        orderInfo.setText(books);
-        omc.add(orderInfo);
-        Panel addBooks = new Panel();
-        addBooks.setLayout(null);
-        omc.add(addBooks);
-
-        JLabel bookL = new JLabel("Input book No. here:");
-        JTextField bookT = new JTextField(100);
-        JLabel qtyL = new JLabel("Input quantity here:");
-        JTextField qtyT = new JTextField(100);
-        Button b1 = new Button("Add");
-        Button b2 = new Button("Confirm");
-        bookL.setBounds(50, 50, 200, 20);
-        bookT.setBounds(50, 80, 100, 20);
-        qtyL.setBounds(50, 120, 200, 20);
-        qtyT.setBounds(50, 150, 100, 20);
-        b1.setBounds(50, 200, 100, 40);
-        b2.setBounds(50, 600, 100, 40);
-        addBooks.add(bookL);
-        addBooks.add(bookT);
-        addBooks.add(qtyL);
-        addBooks.add(qtyT);
-        addBooks.add(b1);
-        addBooks.add(b2);
-
-        JLabel ifAdd = new JLabel();
-        ifAdd.setBounds(50, 260, 500, 20);
-        addBooks.add(ifAdd);
-        ifAdd.setVisible(false);
-
-
-        omPage.setVisible(true);
-
-        bookT.addActionListener(e -> bookT.requestFocusInWindow());
-
-        qtyT.addActionListener(e -> bookT.requestFocusInWindow());
-
-        b1.addActionListener(e -> {
-            String book_no = bookT.getText();
-            String qty = qtyT.getText();
-            bookT.setText("");
-            qtyT.setText("");
-
-            int conditions = addBook(oid, book_no, qty);
-            if (conditions == -1)
-                ifAdd.setText("Add books successfully!");
-            else if (conditions == -2)
-                ifAdd.setText("Fail to add books: Please input book No. and quantity!");
-            else if (conditions == -3)
-                ifAdd.setText("Fail to add books: Book does not exists!");
-            else
-                ifAdd.setText("Fail to add books: This book(book No:" + book_no + ") is out of stock! Remaining quantity: " + conditions);
-
-            ifAdd.setVisible(true);
-        });
-
-        b2.addActionListener(e -> omPage.dispose());
+        new OrderMakingWindow(dbConn, oid);
 
         return true;
     }
@@ -226,31 +157,6 @@ public class OBS {
         } while (payInfo[0].equals("Credit card") && payInfo[1].equals(""));
 
         return payInfo;
-    }
-
-    public int addBook(String order_no, String book_no, String qty) {
-        if (book_no.equals("") || qty.equals(""))
-            return -2;
-        else {
-            int stock = dbConn.selectStock(book_no);
-            if (stock == -1)
-                return -3;
-            else if (stock < Integer.parseInt(qty))
-                return stock;
-
-        }
-
-        dbConn.addBook(order_no, book_no, Integer.parseInt(qty));
-        return -1;
-    }
-
-    public void orderSearching(String sid) {
-
-    }
-
-    public void updateOrder(String orderNo, String bookNo) {
-        dbConn.orderUpdate(orderNo, bookNo, new Date());
-        // TODO Handle exceptions
     }
 
     public void orderCancelling(String sid) {
