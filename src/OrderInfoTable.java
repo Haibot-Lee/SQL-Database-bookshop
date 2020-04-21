@@ -33,7 +33,8 @@ public class OrderInfoTable {
         for (int i=0; i<orders.size(); i++) {
             // Append current order info to root
             Order o = orders.get(i);
-            Node order = new Node(new String[] {o.orderNo, o.stuNo, o.orderDate.toString(), String.valueOf(o.status),
+            String[] status = {"Confirmed", "Shipping", "Completed", "Cancelled"};
+            Node order = new Node(new String[] {o.orderNo, o.stuNo, o.orderDate.toString(), status[o.status],
                     String.valueOf(o.totalPrice), o.payMethod, o.cardNo});
             root.add(order);
             // Add books under current order
@@ -74,24 +75,5 @@ public class OrderInfoTable {
     public Node getNode(TreePath path) {
         return (Node) path.getLastPathComponent();
     }
-//    public static void main(String[] args) {
-//        JFrame testFrame = new JFrame();
-//
-//        List<String[]> strss = new ArrayList<>();
-//        strss.add(new String[] {"Order 1"});
-//        strss.add(new String[] {"Book 1", "book1_attr_1", "book1_attr_2", "book1_attr_3"});
-//        strss.add(new String[] {"Book 2", "book2_attr_1", "book2_attr_2", "book2_attr_3"});
-//        strss.add(new String[] {"Order 2"});
-//        strss.add(new String[] {"Book 1", "book1_attr_1", "book1_attr_2", "book1_attr_3"});
-//        strss.add(new String[] {"Book 2", "book2_attr_1", "book2_attr_2", "book2_attr_3"});
-//        strss.add(new String[] {"Order 3"});
-//        strss.add(new String[] {"Book 1", "book1_attr_1", "book1_attr_2", "book1_attr_3"});
-//        strss.add(new String[] {"Book 2", "book2_attr_1", "book2_attr_2", "book2_attr_3"});
-//        OrderInfoTable orderInfoTable = new OrderInfoTable(strss);
-//        testFrame.setSize(500, 500);
-//        testFrame.setLayout(new BorderLayout());
-//        testFrame.add(new JScrollPane(orderInfoTable.getTreeTable()), BorderLayout.CENTER);
-//        testFrame.setVisible(true);
-//    }
 
 }
