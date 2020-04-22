@@ -155,6 +155,23 @@ public class DBConn {
         return books;
     }
 
+    public List<Book> listBooks() {
+        List<Book> books = new ArrayList<>();
+        try {
+            Statement stm = conn.createStatement();
+            String sql = "SELECT book_no, title, author, price, stock FROM BOOKS";
+            ResultSet rs = stm.executeQuery(sql);
+            while (rs.next()) {
+                books.add(new Book(rs.getString(1), rs.getString(2), rs.getString(3),
+                        rs.getFloat(4), rs.getInt(5)));
+            }
+            rs.close();
+            stm.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return books;
+    }
     public void orderUpdate(String orderNo, String bookNo, Date date) {
         try {
             CallableStatement cs = conn.prepareCall("{CALL update_status_books_and_order(?,?,?)}");

@@ -1,13 +1,21 @@
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Container;
+import java.awt.Panel;
+import java.awt.Button;
+import java.awt.GridLayout;
+import java.util.List;
 
 public class OrderMakingWindow {
     DBConn dbConn;
     String oid;
     String[] payInfo;
     JFrame omPage;
+    JScrollPane bookPane;
     Container omc;
-    JTextArea orderInfo;
+
+    BookTable bookTable;
+    BookInOrderTable bookInOrderTable;
+
     Panel addBooks;
     JLabel bookL;
     JTextField bookT;
@@ -15,10 +23,13 @@ public class OrderMakingWindow {
     JTextField qtyT;
     Button b1, b2;
     JLabel ifAdd;
+    List<Book> books;
+    List<BookInOrder> bookInOrder;
 
     public OrderMakingWindow(DBConn dbConn, String oid) {
         this.dbConn = dbConn;
         this.oid = oid;
+        getData();
         initialize();
     }
 
@@ -28,15 +39,12 @@ public class OrderMakingWindow {
         omPage.setSize(1000, 800);
         omPage.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         omc = omPage.getContentPane();
-        orderInfo = new JTextArea();
-        orderInfo.setSize(500, 800);
 
-        String books = "Your books in this order (Order No.:" + oid + "):\n" +
-                "-----------------------------------------------------------------------------------------------\n";
-        //将books的信息转换为string --TODO
-        orderInfo.setText(books);
+        bookTable = new BookTable(books);
+        bookPane = new JScrollPane(bookTable.getTable());
+        bookPane.setSize(500, 800);
+        omc.add(bookPane);
 
-        omc.add(orderInfo);
         addBooks = new Panel();
         addBooks.setLayout(null);
         omc.add(addBooks);
@@ -73,24 +81,29 @@ public class OrderMakingWindow {
         bookT.addActionListener(e -> bookT.requestFocusInWindow());
         qtyT.addActionListener(e -> bookT.requestFocusInWindow());
         b1.addActionListener(e -> {
-            String book_no = bookT.getText();
-            String qty = qtyT.getText();
-            bookT.setText("");
-            qtyT.setText("");
-
-            int conditions = addBook(oid, book_no, qty);
-            if (conditions == -1)
-                ifAdd.setText("Add books successfully!");
-            else if (conditions == -2)
-                ifAdd.setText("Fail to add books: Please input book No. and quantity!");
-            else if (conditions == -3)
-                ifAdd.setText("Fail to add books: Book does not exists!");
-            else
-                ifAdd.setText("Fail to add books: This book(book No:" + book_no + ") is out of stock! Remaining quantity: " + conditions);
-
-            ifAdd.setVisible(true);
+            addBook();
+            // refresh tables
         });
         b2.addActionListener(e -> omPage.dispose());
+    }
+
+    private void addBook() {
+        String book_no = bookT.getText();
+        String qty = qtyT.getText();
+        bookT.setText("");
+        qtyT.setText("");
+
+        int conditions = addBook(oid, book_no, qty);
+        if (conditions == -1)
+            ifAdd.setText("Add books successfully!");
+        else if (conditions == -2)
+            ifAdd.setText("Fail to add books: Please input book No. and quantity!");
+        else if (conditions == -3)
+            ifAdd.setText("Fail to add books: Book does not exists!");
+        else
+            ifAdd.setText("Fail to add books: This book(book No:" + book_no + ") is out of stock! Remaining quantity: " + conditions);
+
+        ifAdd.setVisible(true);
     }
 
     private int addBook(String order_no, String book_no, String qty) {
@@ -107,5 +120,13 @@ public class OrderMakingWindow {
         return -1;
     }
 
+    private void getData() {
+        books = dbConn.listBooks();
+        bookInOrder = dbConn.searchBookInOrder(oid);
+    }
 
+    public void refresh() {
+        getData();
+
+    }
 }
