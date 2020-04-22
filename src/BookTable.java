@@ -1,24 +1,48 @@
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.util.List;
 
-public class BookTable extends MyTable{
+/**
+ * This class is extended by:
+ *      * StockTable, which shows the information of Books in stock;
+ *      * BookInOrderTable, which shows the information of BookInOrders
+ *          in current order;
+ *      (I admit that the naming is a bit confusing...)
+ */
+public abstract class BookTable {
+    String[] headings;
+    DefaultTableModel model;
+    JTable table;
+    List items;
+    String[][] data;
 
-
-    public BookTable(List<Book> books) {
-        super(books, new String[] {"Book No.", "Book Title", "Author", "Price", "Stock"});
+    public BookTable(List items, String[] headings) {
+        this.items = items;
+        this.headings = headings;
+        importData();
+        createModel();
+        createTable();
     }
 
-    void importData() {
-        super.data = new String[super.items.size()][5];
-        System.out.println("books.size(): " + super.items.size());
-        for (int i=0; i<super.items.size(); i++) {
-            Book b = (Book) super.items.get(i);
-            data[i] = new String[] {b.bookNo, b.title, b.author,
-                    String.valueOf(b.price), String.valueOf(b.stock)};
-            for (String s : data[i]) {
-                System.out.print(s);
-            }
-            System.out.println();
-        }
+    abstract void importData();
+
+    private void createModel() {
+        model = new DefaultTableModel(data, headings);
     }
 
+    private void createTable() {
+        table = new JTable(model);
+        table.setShowGrid(true);
+    }
+
+    public JTable getTable() {
+        return table;
+    }
+
+    public void refresh(List items) {
+        this.items = items;
+        importData();
+        model.setDataVector(data, null);  // todo check?
+        table.updateUI();
+    }
 }

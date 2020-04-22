@@ -13,7 +13,7 @@ public class OrderMakingWindow {
     JScrollPane bookPane;
     Container omc;
 
-    BookTable bookTable;
+    StockTable stockTable;
     BookInOrderTable bookInOrderTable;
 
     Panel addBooks;
@@ -40,8 +40,8 @@ public class OrderMakingWindow {
         omPage.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         omc = omPage.getContentPane();
 
-        bookTable = new BookTable(books);
-        bookPane = new JScrollPane(bookTable.getTable());
+        stockTable = new StockTable(books);
+        bookPane = new JScrollPane(stockTable.getTable());
         bookPane.setSize(500, 800);
         omc.add(bookPane);
 
