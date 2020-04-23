@@ -39,7 +39,7 @@ public class OrderMakingWindow {
         omPage.setSize(1000, 800);
         omPage.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         omc = omPage.getContentPane();
-
+        // Book in stock Table
         stockTable = new StockTable(books);
         bookPane = new JScrollPane(stockTable.getTable());
         bookPane.setSize(500, 800);
@@ -82,7 +82,7 @@ public class OrderMakingWindow {
         qtyT.addActionListener(e -> bookT.requestFocusInWindow());
         b1.addActionListener(e -> {
             addBook();
-            // refresh tables
+            refresh();
         });
         b2.addActionListener(e -> omPage.dispose());
     }
@@ -127,6 +127,7 @@ public class OrderMakingWindow {
 
     public void refresh() {
         getData();
-
+        stockTable.refresh(books);
+        bookInOrderTable.refresh(bookInOrder);
     }
 }

@@ -42,7 +42,6 @@ public abstract class BookTable {
     public void refresh(List items) {
         this.items = items;
         importData();
-        model.setDataVector(data, null);  // todo check?
-        table.updateUI();
+        model.setDataVector(data, headings);
     }
 }
