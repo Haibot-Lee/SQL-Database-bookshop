@@ -45,6 +45,10 @@ public class OrderMakingWindow {
         bookPane.setSize(500, 800);
         omc.add(bookPane);
 
+        // Book in order Table
+        bookInOrderTable = new BookInOrderTable(bookInOrder);
+
+        // AddBook Operation Panel
         addBooks = new Panel();
         addBooks.setLayout(null);
         omc.add(addBooks);
