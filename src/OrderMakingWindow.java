@@ -10,7 +10,6 @@ import java.util.List;
 public class OrderMakingWindow {
     DBConn dbConn;
     String oid;
-    String[] payInfo;
     JFrame omPage;
     JScrollPane bookPane;
     JScrollPane bookInOrderPane;
@@ -19,7 +18,7 @@ public class OrderMakingWindow {
     StockTable stockTable;
     BookInOrderTable bookInOrderTable;
 
-    Panel addBooks;
+    Panel addBooks, options;
     JLabel bookL;
     JTextField bookT;
     JLabel qtyL;
@@ -42,10 +41,10 @@ public class OrderMakingWindow {
         omPage.setSize(1000, 800);
         omPage.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         omc = omPage.getContentPane();
+
         // Book in stock Table
         stockTable = new StockTable(books);
         bookPane = new JScrollPane(stockTable.getTable());
-        bookPane.setSize(500, 800);
         omc.add(bookPane);
         ListSelectionModel selectionModel = stockTable.getTable().getSelectionModel();
         selectionModel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -58,16 +57,19 @@ public class OrderMakingWindow {
             }
         });
 
+        addBooks = new Panel();
+        addBooks.setLayout(new GridLayout(2, 1));
+        omc.add(addBooks);
+
         // Book in order Table
         bookInOrderTable = new BookInOrderTable(bookInOrder);
         bookInOrderPane = new JScrollPane(bookInOrderTable.getTable());
-        bookInOrderPane.setSize(500, 400);
-        omc.add(bookInOrderPane);
+        addBooks.add(bookInOrderPane);
 
         // AddBook Operation Panel
-        addBooks = new Panel();
-        addBooks.setLayout(null);
-        omc.add(addBooks);
+        options = new Panel();
+        options.setLayout(null);
+        addBooks.add(options);
 
         bookL = new JLabel("Input book No. here:");
         bookT = new JTextField(100);
@@ -80,19 +82,19 @@ public class OrderMakingWindow {
 
         b1 = new Button("Add");
         b2 = new Button("Confirm");
-        b1.setBounds(50, 200, 100, 40);
-        b2.setBounds(50, 600, 100, 40);
+        b1.setBounds(300, 100, 100, 40);
+        b2.setBounds(150, 300, 200, 40);
 
-        addBooks.add(bookL);
-        addBooks.add(bookT);
-        addBooks.add(qtyL);
-        addBooks.add(qtyT);
-        addBooks.add(b1);
-        addBooks.add(b2);
+        options.add(bookL);
+        options.add(bookT);
+        options.add(qtyL);
+        options.add(qtyT);
+        options.add(b1);
+        options.add(b2);
 
         ifAdd = new JLabel();
-        ifAdd.setBounds(50, 260, 500, 20);
-        addBooks.add(ifAdd);
+        ifAdd.setBounds(50, 200, 500, 40);
+        options.add(ifAdd);
         ifAdd.setVisible(false);
 
         omPage.setVisible(true);
@@ -113,31 +115,26 @@ public class OrderMakingWindow {
         bookT.setText("");
         qtyT.setText("");
 
-        int conditions = addBook(oid, book_no, qty);
-        if (conditions == -1)
-            ifAdd.setText("Add books successfully!");
-        else if (conditions == -2)
+        if (book_no.equals("") || qty.equals("")) {
             ifAdd.setText("Fail to add books: Please input book No. and quantity!");
-        else if (conditions == -3)
-            ifAdd.setText("Fail to add books: Book does not exists!");
-        else
-            ifAdd.setText("Fail to add books: This book(book No:" + book_no + ") is out of stock! Remaining quantity: " + conditions);
-
-        ifAdd.setVisible(true);
-    }
-
-    private int addBook(String order_no, String book_no, String qty) {
-        if (book_no.equals("") || qty.equals(""))
-            return -2;
-        else {
+            ifAdd.setVisible(true);
+            return;
+        } else {
             int stock = dbConn.selectStock(book_no);
-            if (stock == -1)
-                return -3;
-            else if (stock < Integer.parseInt(qty))
-                return stock;
+            if (stock == -1) {
+                ifAdd.setText("Fail to add books: This book(book No:" + book_no + ") does not exists!");
+                ifAdd.setVisible(true);
+                return;
+            } else if (stock < Integer.parseInt(qty)) {
+                ifAdd.setText("<html>Fail to add books: This book(book No:" + book_no + ") is out of stock!<br>Remaining quantity: " + stock + "</html>");
+                ifAdd.setVisible(true);
+                return;
+            }
         }
-        dbConn.addBook(order_no, book_no, Integer.parseInt(qty));
-        return -1;
+
+        dbConn.addBook(oid, book_no, Integer.parseInt(qty));
+        ifAdd.setText("Add book(s) successfully!");
+        ifAdd.setVisible(true);
     }
 
     private void getData() {
