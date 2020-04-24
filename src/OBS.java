@@ -186,8 +186,8 @@ public class OBS {
         JTextField dbUserName = new JTextField(25);
         dbLogin[1].add(dbUserName);
         dbLogin[1].add(new JLabel("Database user password:"));
-        JTextField dbUserPassw = new JTextField(25);
-        dbLogin[1].add(dbUserPassw);
+        JPasswordField dbUserPasw = new JPasswordField(25);
+        dbLogin[1].add(dbUserPasw);
         JCheckBox ifUseProxy = new JCheckBox("Use SSH proxy");
         dbLogin[2].add(ifUseProxy);
         JButton confirm = new JButton("Login");
@@ -208,7 +208,7 @@ public class OBS {
         JTextField proxyUserName = new JTextField(25);
         proxy[2].add(proxyUserName);
         proxy[2].add(new Label("Proxy user password:"));
-        JTextField proxyUserPasw = new JTextField(25);
+        JPasswordField proxyUserPasw = new JPasswordField(25);
         proxy[2].add(proxyUserPasw);
 
         ifUseProxy.addItemListener(new ItemListener() {
@@ -226,16 +226,18 @@ public class OBS {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (ifUseProxy.isSelected()) {
-                    OBS obs = new OBS(new DBConn(dbUserName.getText(), dbUserPassw.getText(),
-                            proxyHost.getText(), Integer.parseInt(proxyPort.getText()), proxyUserName.getText(), proxyUserPasw.getText()));
-                    login.setVisible(false);
+//                    OBS obs = new OBS(new DBConn(dbUserName.getText(), new String(dbUserPasw.getPassword()),
+//                            proxyHost.getText(), Integer.parseInt(proxyPort.getText()), proxyUserName.getText(), new String(proxyUserPasw.getPassword())));
+                    OBS obs = new OBS(new DBConn("e8252125", "e8252125",
+                            "faith.comp.hkbu.edu.hk", 22, "e8252125", "Input your own password"));
+                    login.dispose();
                 } else {
+//                    OBS obs = new OBS(new DBConn(dbUserName.getText(), dbUserPasw.getText());
                     OBS obs = new OBS(new DBConn("e8252125", "e8252125"));
-                    login.setVisible(false);
+                    login.dispose();
                 }
             }
         });
-
 
     }
 
