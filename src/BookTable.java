@@ -11,7 +11,7 @@ import java.util.List;
  */
 public abstract class BookTable {
     String[] headings;
-    DefaultTableModel model;
+    BookTableModel model;
     JTable table;
     List items;
     String[][] data;
@@ -27,7 +27,7 @@ public abstract class BookTable {
     abstract void importData();
 
     private void createModel() {
-        model = new DefaultTableModel(data, headings);
+        model = new BookTableModel(data, headings);
     }
 
     private void createTable() {
