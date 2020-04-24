@@ -1,24 +1,19 @@
 import javax.swing.*;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.Date;
 import java.util.List;
 
-import org.jdesktop.swingx.JXTreeTable;
-
 public class OBS {
-    DBConn dbConn = new DBConn("e8252125", "e8252125");
+    DBConn dbConn;
 
-//    DBConn dbConn = new DBConn("e8250009", "e8250009", "faith.comp.hkbu.edu.hk", 22,
-//            "e825xxxx", "********");
+    public OBS(DBConn dbConn) {
+        this.dbConn = dbConn;
 
-    public OBS() {
         List<String> sids = dbConn.selectSid();
-
         JFrame homePage = new JFrame("Online University Bookshop");
         homePage.setSize(600, 400);
         homePage.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -38,28 +33,28 @@ public class OBS {
         jl.setVisible(false);
 
         b1.addActionListener(e -> {
-            String sid = login(sids);
+            String sid = inputSID(sids);
             new OrderSearchWindow(dbConn, sid);
 
         });
 
         b2.addActionListener(e -> {
             jl.setVisible(false);
-            String sid = login(sids);
+            String sid = inputSID(sids);
             jl.setVisible(!orderMaking(sid));
         });
 
         homePage.setVisible(true);
     }
 
-    public String login(List<String> sids) {
+    public String inputSID(List<String> sids) {
         boolean ifexist = true;
         String sid;
         do {
             JPanel panel = new JPanel();
             final TextField sidField = new TextField();
             panel.setLayout(new GridLayout(3, 1));
-            panel.add(new JLabel("Please login with your student ID:"));
+            panel.add(new JLabel("Please input your student ID:"));
             panel.add(sidField);
             JLabel jl = new JLabel("Students does not exist!");
             jl.setVisible(!ifexist);
@@ -164,7 +159,84 @@ public class OBS {
     }
 
     public static void main(String[] args) {
-        OBS obs = new OBS();
+        JFrame login = new JFrame("Login");
+        login.setSize(900, 300);
+        login.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        Container c = login.getContentPane();
+        c.setLayout(new GridLayout(2, 1));
+        JPanel[] dbLogin = new JPanel[3];
+        for (int i = 0; i < dbLogin.length; i++) {
+            dbLogin[i] = new JPanel();
+        }
+        JPanel[] proxy = new JPanel[3];
+        for (int i = 0; i < proxy.length; i++) {
+            proxy[i] = new JPanel();
+        }
+
+        c.add(dbLogin[0]);
+        c.add(proxy[0]);
+        proxy[0].setVisible(false);
+
+        //Login into database!
+        dbLogin[0].setLayout(new GridLayout(2, 1));
+        for (int i = 1; i < dbLogin.length; i++) {
+            dbLogin[0].add(dbLogin[i]);
+        }
+        dbLogin[1].add(new JLabel("Database user name:"));
+        JTextField dbUserName = new JTextField(25);
+        dbLogin[1].add(dbUserName);
+        dbLogin[1].add(new JLabel("Database user password:"));
+        JTextField dbUserPassw = new JTextField(25);
+        dbLogin[1].add(dbUserPassw);
+        JCheckBox ifUseProxy = new JCheckBox("Use SSH proxy");
+        dbLogin[2].add(ifUseProxy);
+        JButton confirm = new JButton("Login");
+        dbLogin[2].add(confirm);
+
+        //Choose proxy
+        dbLogin[0].setLayout(new GridLayout(2, 1));
+        for (int i = 1; i < proxy.length; i++) {
+            proxy[0].add(proxy[i]);
+        }
+        proxy[1].add(new Label("Proxy Host:"));
+        JTextField proxyHost = new JTextField(50);
+        proxy[1].add(proxyHost);
+        proxy[1].add(new Label("Proxy Port:"));
+        JTextField proxyPort = new JTextField(5);
+        proxy[1].add(proxyPort);
+        proxy[2].add(new Label("Proxy user name:"));
+        JTextField proxyUserName = new JTextField(25);
+        proxy[2].add(proxyUserName);
+        proxy[2].add(new Label("Proxy user password:"));
+        JTextField proxyUserPasw = new JTextField(25);
+        proxy[2].add(proxyUserPasw);
+
+        ifUseProxy.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if (ifUseProxy.isSelected())
+                    proxy[0].setVisible(true);
+                else
+                    proxy[0].setVisible(false);
+            }
+        });
+        login.setVisible(true);
+
+        confirm.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (ifUseProxy.isSelected()) {
+                    OBS obs = new OBS(new DBConn(dbUserName.getText(), dbUserPassw.getText(),
+                            proxyHost.getText(), Integer.parseInt(proxyPort.getText()), proxyUserName.getText(), proxyUserPasw.getText()));
+                    login.setVisible(false);
+                } else {
+                    OBS obs = new OBS(new DBConn("e8252125", "e8252125"));
+                    login.setVisible(false);
+                }
+            }
+        });
+
+
     }
 
 }
