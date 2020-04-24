@@ -11,6 +11,7 @@ public class OrderMakingWindow {
     String[] payInfo;
     JFrame omPage;
     JScrollPane bookPane;
+    JScrollPane bookInOrderPane;
     Container omc;
 
     StockTable stockTable;
@@ -47,6 +48,9 @@ public class OrderMakingWindow {
 
         // Book in order Table
         bookInOrderTable = new BookInOrderTable(bookInOrder);
+        bookInOrderPane = new JScrollPane(bookInOrderTable.getTable());
+        bookInOrderPane.setSize(500, 400);
+        omc.add(bookInOrderPane);
 
         // AddBook Operation Panel
         addBooks = new Panel();
