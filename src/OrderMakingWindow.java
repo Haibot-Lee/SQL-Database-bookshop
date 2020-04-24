@@ -22,7 +22,7 @@ public class OrderMakingWindow {
     JLabel bookL;
     JTextField bookT;
     JLabel qtyL;
-    JTextField qtyT;
+    JSpinner qtyS;
     Button b1, b2;
     JLabel ifAdd;
     List<Book> books;
@@ -53,7 +53,7 @@ public class OrderMakingWindow {
             public void valueChanged(ListSelectionEvent listSelectionEvent) {
                 int selectedRow = stockTable.getTable().getSelectedRow();
                 if (selectedRow != -1)  // to prevent trigger this listener when refreshing the table
-                bookT.setText((String) stockTable.getTable().getValueAt(selectedRow, 0));
+                    bookT.setText((String) stockTable.getTable().getValueAt(selectedRow, 0));
             }
         });
 
@@ -71,14 +71,14 @@ public class OrderMakingWindow {
         options.setLayout(null);
         addBooks.add(options);
 
-        bookL = new JLabel("Input book No. here:");
+        bookL = new JLabel("Book No.:");
         bookT = new JTextField(100);
-        qtyL = new JLabel("Input quantity here:");
-        qtyT = new JTextField(100);
+        qtyL = new JLabel("Quantity:");
+        qtyS = new JSpinner(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
         bookL.setBounds(50, 50, 200, 20);
         bookT.setBounds(50, 80, 100, 20);
         qtyL.setBounds(50, 120, 200, 20);
-        qtyT.setBounds(50, 150, 100, 20);
+        qtyS.setBounds(50, 150, 100, 20);
 
         b1 = new Button("Add");
         b2 = new Button("Confirm");
@@ -88,7 +88,7 @@ public class OrderMakingWindow {
         options.add(bookL);
         options.add(bookT);
         options.add(qtyL);
-        options.add(qtyT);
+        options.add(qtyS);
         options.add(b1);
         options.add(b2);
 
@@ -100,8 +100,6 @@ public class OrderMakingWindow {
         omPage.setVisible(true);
 
         // Action settings
-        bookT.addActionListener(e -> bookT.requestFocusInWindow());
-        qtyT.addActionListener(e -> bookT.requestFocusInWindow());
         b1.addActionListener(e -> {
             addBook();
             refresh();
@@ -111,11 +109,11 @@ public class OrderMakingWindow {
 
     private void addBook() {
         String book_no = bookT.getText();
-        String qty = qtyT.getText();
+        int qty = (int) qtyS.getValue();
         bookT.setText("");
-        qtyT.setText("");
+        qtyS.setValue(1);
 
-        if (book_no.equals("") || qty.equals("")) {
+        if (book_no.equals("")) {
             ifAdd.setText("Fail to add books: Please input book No. and quantity!");
             ifAdd.setVisible(true);
             return;
@@ -125,14 +123,14 @@ public class OrderMakingWindow {
                 ifAdd.setText("Fail to add books: This book(book No:" + book_no + ") does not exists!");
                 ifAdd.setVisible(true);
                 return;
-            } else if (stock < Integer.parseInt(qty)) {
+            } else if (stock < qty) {
                 ifAdd.setText("<html>Fail to add books: This book(book No:" + book_no + ") is out of stock!<br>Remaining quantity: " + stock + "</html>");
                 ifAdd.setVisible(true);
                 return;
             }
         }
 
-        dbConn.addBook(oid, book_no, Integer.parseInt(qty));
+        dbConn.addBook(oid, book_no, qty);
         ifAdd.setText("Add book(s) successfully!");
         ifAdd.setVisible(true);
     }
