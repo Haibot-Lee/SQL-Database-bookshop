@@ -1,4 +1,6 @@
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.Container;
 import java.awt.Panel;
 import java.awt.Button;
@@ -45,6 +47,16 @@ public class OrderMakingWindow {
         bookPane = new JScrollPane(stockTable.getTable());
         bookPane.setSize(500, 800);
         omc.add(bookPane);
+        ListSelectionModel selectionModel = stockTable.getTable().getSelectionModel();
+        selectionModel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        selectionModel.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent listSelectionEvent) {
+                int selectedRow = stockTable.getTable().getSelectedRow();
+                if (selectedRow != -1)  // to prevent trigger this listener when refreshing the table
+                bookT.setText((String) stockTable.getTable().getValueAt(selectedRow, 0));
+            }
+        });
 
         // Book in order Table
         bookInOrderTable = new BookInOrderTable(bookInOrder);
