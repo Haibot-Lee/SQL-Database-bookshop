@@ -38,7 +38,7 @@ public class OrderInfoTable {
                     String.valueOf(o.totalPrice), o.payMethod, o.cardNo});
             root.add(order);
             // Add books under current order
-            String[] subheadings = {"Order No.", "Book No.", "Title", "Quantity", "Delivery"};
+            String[] subheadings = {"<Order No.>", "<Book No.>", "<Title>", "<Quantity>", "<Delivery>", "---", "---"};
             order.add(new Node(subheadings));
             for (BookInOrder b : bookInOrders[i]) {
                 Node book = new Node (new String[] {o.orderNo, b.bookNo, b.title, String.valueOf(b.qty),
@@ -55,9 +55,6 @@ public class OrderInfoTable {
     public void createTable() {
         table = new JXTreeTable(model);
         table.setShowGrid(true, true);
-        // TODO: Change colors of the subheadings
-        table.packAll();
-        // TODO: Disable selection for subheadings
     }
 
     public JXTreeTable getTreeTable() {

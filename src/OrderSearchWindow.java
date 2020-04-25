@@ -63,7 +63,13 @@ public class OrderSearchWindow {
                 TreePath path = jxTable.getPathForRow(selectedRow);
                 if (path == null) return;      // to prevent trigger this listener when refreshing the table
                 Node selectedNode = table.getNode(path);
-
+                // Disable selection for subheading rows
+                if (((String[]) selectedNode.getUserObject())[0].equals("<Order No.>")) {
+                    jxTable.clearSelection();
+                    b1.setEnabled(false);
+                    b2.setEnabled(false);
+                    return;
+                }
                 orderNo[0] = jxTable.getStringAt(selectedRow, 0);
                 bookNo[0] = jxTable.getStringAt(selectedRow, 1);
 
