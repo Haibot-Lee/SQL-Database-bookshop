@@ -24,6 +24,8 @@ public class OrderSearchWindow {
     Button b1;
     Button b2;
 
+    Node selectedNode;
+
     public OrderSearchWindow(DBConn dbConn, String sid) {
         this.dbConn = dbConn;
         this.sid = sid;
@@ -51,7 +53,6 @@ public class OrderSearchWindow {
         pane.setBounds(0, 0, 800, 800);
 
         // Row selection
-        int selectedType;   // 0: invalid; 1: Order; 2: Book
         final String[] orderNo = new String[1];
         final String[] bookNo = new String[1];
         jxTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);    // Single selection allowed only
@@ -62,7 +63,7 @@ public class OrderSearchWindow {
                 int selectedRow = jxTable.getSelectedRow();
                 TreePath path = jxTable.getPathForRow(selectedRow);
                 if (path == null) return;      // to prevent trigger this listener when refreshing the table
-                Node selectedNode = table.getNode(path);
+                selectedNode = table.getNode(path);
                 // Disable selection for subheading rows
                 if (((String[]) selectedNode.getUserObject())[0].equals("<Order No.>")) {
                     jxTable.clearSelection();
@@ -93,9 +94,14 @@ public class OrderSearchWindow {
         b2.setBounds(840, 150, 100, 40);
         b1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                if (selectedNode.getParent() != null &&
+                        !((String[]) selectedNode.getParent().getUserObject())[3].equals("Confirmed")) {
+                    System.out.println("The order is already " + ((String[]) selectedNode.getParent().getUserObject())[3]);
+                    // TODO: REPLACE WITH DIALOG/LABEL
+                    return;
+                }
                 updateOrder(orderNo[0], bookNo[0]);
                 refresh();
-                // TODO: REFRESH AFTER UPDATE!
             }
         });
 
