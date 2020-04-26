@@ -138,6 +138,21 @@ END;
 /
 
 
+--check the card number of credit card
+CREATE OR REPLACE TRIGGER card_no_payment
+    BEFORE INSERT OR UPDATE
+    ON ORDERS
+    FOR EACH ROW
+BEGIN
+    IF (:NEW.pay_method='Credit Card' AND :NEW.card_no='')
+    THEN
+        RAISE_APPLICATION_ERROR(-20000, 'INVALID CARD NUMBER');
+    END IF;
+END;
+.
+/
+
+
 CREATE OR REPLACE PROCEDURE add_book_in_order(o_no CHAR, b_no CHAR, add_qty INT) AS
     cnt INT;
 BEGIN
