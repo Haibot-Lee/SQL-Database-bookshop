@@ -116,27 +116,6 @@ END;
 .
 /
 
-CREATE OR REPLACE TRIGGER total_price_stock_delete
-    AFTER DELETE -- TODO Review the DELETE condition later
-    ON BOOK_IN_ORDERS
-    FOR EACH ROW
-DECLARE
-    p REAL;
-    d REAL;
-BEGIN
-    SELECT price INTO p FROM BOOKS WHERE BOOKS.book_no = :old.book_no;
-    SELECT discount
-    INTO d
-    FROM ORDERS O
-             NATURAL JOIN STUDENTS S
-    WHERE order_no = :old.order_no;
-    UPDATE ORDERS SET total_price = total_price - :old.qty * p * (1 - d) WHERE order_no = :old.order_no;
-
-    UPDATE BOOKS SET stock = stock + :old.qty WHERE book_no = :old.book_no;
-END;
-.
-/
-
 
 --check the card number of credit card
 CREATE OR REPLACE TRIGGER card_no_payment
