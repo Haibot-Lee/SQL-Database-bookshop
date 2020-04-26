@@ -192,12 +192,18 @@ END;
 
 CREATE OR REPLACE PROCEDURE cancel_status_books_and_order(o_no CHAR, b_no CHAR, st_qty INT) AS
     s INT;
+    dt DATE;
 BEGIN
     SELECT status INTO s FROM ORDERS WHERE ORDERS.order_no = o_no;
-    IF s = 0 THEN
-        UPDATE BOOKS SET stock = stock + st_qty
-        WHERE BOOKS.book_no = b_no;
+    IF s != 0 THEN
+        RAISE_APPLICATION_ERROR(-10000, 'INVALID ORDER STATUS');
     END IF;
+    SELECT order_date INTO dt FROM ORDERS WHERE ORDERS.order_no = o_no;
+    IF (CURRENT_DATE-dt) > 7 THEN
+        RAISE_APPLICATION_ERROR(-10001, 'INVALID ORDER DATE');
+    END IF;
+    UPDATE BOOKS SET stock = stock + st_qty
+    WHERE BOOKS.book_no = b_no;
 END;
 .
 /
