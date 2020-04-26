@@ -227,6 +227,30 @@ public class DBConn {
         return stock;   // -1: Book does not exist  0: Out of stock  others: Book in stocks
     }
 
+    public void cancelOrder(String orderNo){
+        try {
+            CallableStatement cs = conn.prepareCall("{CALL cancel_status_books_and_order(?,?,?)}");
+            Statement stm = conn.createStatement();
+            String sql = "SELECT * FROM BOOK_IN_ORDERS WHERE order_no = '"+orderNo+"'";
+            ResultSet rs = stm.executeQuery(sql);
+            while (rs.next()){
+                cs.setString(1, rs.getString(1));
+                cs.setString(2, rs.getString(2));
+                cs.setString(3, rs.getString(3));
+                System.out.println("call prepared");
+                cs.execute();
+                System.out.println("executed");
+            }
+            String sql2 = "UPDATE ORDERS SET status = 3 WHERE ORDERS.order_no = '" + orderNo + "' AND status = 0";
+            stm.executeQuery(sql2);
+            cs.close();
+            rs.close();
+            stm.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void main(String[] args) {
         orderMakingTest();
     }

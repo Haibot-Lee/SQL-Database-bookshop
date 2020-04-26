@@ -190,6 +190,18 @@ END;
 .
 /
 
+CREATE OR REPLACE PROCEDURE cancel_status_books_and_order(o_no CHAR, b_no CHAR, st_qty INT) AS
+    s INT;
+BEGIN
+    SELECT status INTO s FROM ORDERS WHERE ORDERS.order_no = o_no;
+    IF s = 0 THEN
+        UPDATE BOOKS SET stock = stock + st_qty
+        WHERE BOOKS.book_no = b_no;
+    END IF;
+END;
+.
+/
+
 INSERT INTO STUDENTS
 VALUES ('11111111', 'Kurt', 'M', 'COMP', 1630, 0.1);
 INSERT INTO STUDENTS

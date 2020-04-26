@@ -107,7 +107,8 @@ public class OrderSearchWindow {
 
         b2.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                orderCancelling(sid);
+                orderCancelling(orderNo[0]);
+                refresh();
             }
         });
 
@@ -135,7 +136,7 @@ public class OrderSearchWindow {
         // TODO Handle exceptions
     }
 
-    private void orderCancelling(String sid) {
-
+    private void orderCancelling(String orderNo) {
+        dbConn.cancelOrder(orderNo);
     }
 }
