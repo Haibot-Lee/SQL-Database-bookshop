@@ -254,8 +254,8 @@ public class OBS {
                     }
                 } else {
                     try {
-                        OBS obs = new OBS(new DBConn(dbUserName.getText(), new String(dbUserPasw.getPassword())));
-//                        OBS obs = new OBS(new DBConn("e8252125", "e8252125"));
+//                        OBS obs = new OBS(new DBConn(dbUserName.getText(), new String(dbUserPasw.getPassword())));
+                        OBS obs = new OBS(new DBConn("e8252125", "e8252125"));
                         ifLogin = true;
                     } catch (SQLException ex) {
                         JOptionPane.showMessageDialog(null, "Fail to login database: please check your user name/password!", "", JOptionPane.ERROR_MESSAGE);

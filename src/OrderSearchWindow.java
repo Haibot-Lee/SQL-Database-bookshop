@@ -144,13 +144,14 @@ public class OrderSearchWindow {
         try {
             dbConn.cancelOrder(orderNo);
         } catch (SQLException e) {
-            if (e.getErrorCode() == -20001)
+            System.out.println(e.getErrorCode());
+            if (e.getErrorCode() == 20001)
                 JOptionPane.showMessageDialog(null, "Some book(s) in this order is already delivered!", "", JOptionPane.ERROR_MESSAGE);
-            else if (e.getErrorCode() == -20002)
+            else if (e.getErrorCode() == 20002)
                 JOptionPane.showMessageDialog(null, "Wrong status: The order is already completed!", "", JOptionPane.ERROR_MESSAGE);
-            else if (e.getErrorCode() == -20003)
+            else if (e.getErrorCode() == 20003)
                 JOptionPane.showMessageDialog(null, "Wrong status: The order is already cancelled!", "", JOptionPane.ERROR_MESSAGE);
-            else if (e.getErrorCode() == -20017)
+            else if (e.getErrorCode() == 20017)
                 JOptionPane.showMessageDialog(null, "This order is made over 7 days!", "", JOptionPane.ERROR_MESSAGE);
         }
     }
