@@ -234,10 +234,10 @@ public class OBS {
                 boolean ifLogin = false;
                 if (ifUseProxy.isSelected()) {
                     try {
-//                        OBS obs = new OBS(new DBConn(dbUserName.getText(), new String(dbUserPasw.getPassword()),
-//                            proxyHost.getText(), Integer.parseInt(proxyPort.getText()), proxyUserName.getText(), new String(proxyUserPasw.getPassword())));
-                        OBS obs = new OBS(new DBConn("e825215", "e8252125",
-                                "faith.comp.hkbu.edu.hk", 22, "e8252125", ""));
+                        OBS obs = new OBS(new DBConn(dbUserName.getText(), new String(dbUserPasw.getPassword()),
+                                proxyHost.getText(), Integer.parseInt(proxyPort.getText()), proxyUserName.getText(), new String(proxyUserPasw.getPassword())));
+//                        OBS obs = new OBS(new DBConn("e825215", "e8252125",
+//                                "faith.comp.hkbu.edu.hk", 22, "e8252125", ""));
                         ifLogin = true;
                     } catch (JSchException ex) {
                         String errorMess = "Fail to login proxy: ";
@@ -254,8 +254,8 @@ public class OBS {
                     }
                 } else {
                     try {
-//                        OBS obs = new OBS(new DBConn(dbUserName.getText(), dbUserPasw.getText());
-                        OBS obs = new OBS(new DBConn("e8252125", "e8252125"));
+                        OBS obs = new OBS(new DBConn(dbUserName.getText(), new String(dbUserPasw.getPassword())));
+//                        OBS obs = new OBS(new DBConn("e8252125", "e8252125"));
                         ifLogin = true;
                     } catch (SQLException ex) {
                         JOptionPane.showMessageDialog(null, "Fail to login database: please check your user name/password!", "", JOptionPane.ERROR_MESSAGE);
