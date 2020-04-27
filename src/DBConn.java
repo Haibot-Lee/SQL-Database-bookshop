@@ -13,6 +13,7 @@ import java.util.List;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+
 import java.util.Properties;
 
 public class DBConn {
@@ -83,12 +84,12 @@ public class DBConn {
     public void orderMaking(String orderNo, String stuNo, Date orderDate, String payMethod, String cardNo) {
         try {
             Statement stm = conn.createStatement();
-            String sql = "INSERT INTO ORDERS(order_no, stu_no, order_date, pay_method, card_no) VALUES(\'"
-                    + orderNo + "\',\'"
-                    + stuNo + "\',\'"
+            String sql = "INSERT INTO ORDERS(order_no, stu_no, order_date, pay_method, card_no) VALUES('"
+                    + orderNo + "','"
+                    + stuNo + "','"
                     + new SimpleDateFormat("dd-MMM-yyyy").format(orderDate) + "\',\'"
-                    + payMethod + "\',"
-                    + cardNo + ")";
+                    + payMethod + "','"
+                    + cardNo + "')";
             stm.executeUpdate(sql);
             stm.close();
 
@@ -172,6 +173,7 @@ public class DBConn {
         }
         return books;
     }
+
     public void orderUpdate(String orderNo, String bookNo, Date date) {
         try {
             CallableStatement cs = conn.prepareCall("{CALL update_status_books_and_order(?,?,?)}");
@@ -227,13 +229,13 @@ public class DBConn {
         return stock;   // -1: Book does not exist  0: Out of stock  others: Book in stocks
     }
 
-    public void cancelOrder(String orderNo){
+    public void cancelOrder(String orderNo) {
         try {
             CallableStatement cs = conn.prepareCall("{CALL cancel_status_books_and_order(?,?,?)}");
             Statement stm = conn.createStatement();
-            String sql = "SELECT * FROM BOOK_IN_ORDERS WHERE order_no = '"+orderNo+"'";
+            String sql = "SELECT * FROM BOOK_IN_ORDERS WHERE order_no = '" + orderNo + "'";
             ResultSet rs = stm.executeQuery(sql);
-            while (rs.next()){
+            while (rs.next()) {
                 cs.setString(1, rs.getString(1));
                 cs.setString(2, rs.getString(2));
                 cs.setString(3, rs.getString(3));
@@ -251,48 +253,4 @@ public class DBConn {
         }
     }
 
-    public static void main(String[] args) {
-        orderMakingTest();
-    }
-
-
-    /************* TESTING AREA ***************/
-    private static void orderSearchTest() {
-        DBConn dbConn = new DBConn("e8252125", "e8252125");
-        List<Order> orders = dbConn.searchOrder("22222222");
-        List<BookInOrder> books = dbConn.searchBookInOrder("222222221");
-
-        for (Order i : orders) {
-            System.out.println(i);
-        }
-
-        for (BookInOrder i : books) {
-            System.out.println(i);
-        }
-
-        dbConn.orderUpdate("222222221", "002", new Date());
-        System.out.println();
-
-        orders = dbConn.searchOrder("22222222");
-        books = dbConn.searchBookInOrder("222222221");
-
-        for (Order i : orders) {
-            System.out.println(i);
-        }
-
-        for (BookInOrder i : books) {
-            System.out.println(i);
-        }
-
-
-    }
-
-    private static void orderMakingTest() {
-        DBConn dbConn = new DBConn("e8250009", "e8250009");
-        String cardNo = "'asd'";
-        dbConn.orderMaking("234", "11111111", new Date(), "CASH", cardNo);
-    }
 }
-
-// TODO LIST
-//  * add close() method

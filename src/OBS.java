@@ -102,7 +102,7 @@ public class OBS {
     }
 
     public String[] payMethod() {
-        String[] payInfo = {null, null};
+        String[] payInfo = {null, ""};
 
         do {
             JComboBox<String> pay = new JComboBox<>();
@@ -152,10 +152,6 @@ public class OBS {
         } while (payInfo[0].equals("Credit card") && payInfo[1].equals(""));
 
         return payInfo;
-    }
-
-    public void orderCancelling(String sid) {
-
     }
 
     public static void main(String[] args) {

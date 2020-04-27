@@ -23,6 +23,7 @@ public class OrderSearchWindow {
     JXTreeTable jxTable;
     Button b1;
     Button b2;
+    JLabel jdisplay;
 
     Node selectedNode;
 
@@ -45,7 +46,7 @@ public class OrderSearchWindow {
     private void initialize() {
         osPage = new JFrame("All of your orders");
         osPage.setLayout(null);
-        osPage.setSize(1000, 800);
+        osPage.setSize(1100, 800);
         osc = osPage.getContentPane();
         table = new OrderInfoTable(orders, bookInOrders);
         jxTable = table.getTreeTable();
@@ -88,16 +89,18 @@ public class OrderSearchWindow {
 
         b1 = new Button("Order Update");
         b2 = new Button("Order Cancelling");
+        jdisplay = new JLabel();
         b1.setEnabled(false);
         b2.setEnabled(false);
         b1.setBounds(840, 50, 100, 40);
         b2.setBounds(840, 150, 100, 40);
+        jdisplay.setBounds(840, 200, 200, 40);
         b1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (selectedNode.getParent() != null &&
-                        !((String[]) selectedNode.getParent().getUserObject())[3].equals("Confirmed")) {
-                    System.out.println("The order is already " + ((String[]) selectedNode.getParent().getUserObject())[3]);
-                    // TODO: REPLACE WITH DIALOG/LABEL
+                        !((String[]) selectedNode.getParent().getUserObject())[3].equals("Confirmed") &&
+                        !((String[]) selectedNode.getParent().getUserObject())[3].equals("Shipping")) {
+                    jdisplay.setText("The order is already " + ((String[]) selectedNode.getParent().getUserObject())[3] + "!");
                     return;
                 }
                 updateOrder(orderNo[0], bookNo[0]);
@@ -114,6 +117,7 @@ public class OrderSearchWindow {
 
         osc.add(b1);
         osc.add(b2);
+        osc.add(jdisplay);
         osc.add(pane);
         osPage.setVisible(true);
     }
