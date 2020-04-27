@@ -253,7 +253,7 @@ public class DBConn {
                 cs.setString(2, rs.getString(2));
                 cs.setString(3, rs.getString(3));
                 System.out.println("call prepared");
-                cs.execute();
+                cs.execute();   // APPLICATION_ERRORS are caught here
                 System.out.println("executed");
             }
             String sql2 = "UPDATE ORDERS SET status = 3 WHERE ORDERS.order_no = '" + orderNo + "' AND status = 0";
