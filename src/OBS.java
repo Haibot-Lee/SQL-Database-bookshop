@@ -88,8 +88,11 @@ public class OBS {
     public boolean orderMaking(String sid) {
         List<Order> orders = dbConn.searchOrder(sid);
         for (Order i : orders) {
-            if (i.status == 0 || i.status == 1) {
+            if (i.status == 0 || i.status == 1) {   // when there's an outstanding (Confirmed/Shipping)
                 return false;
+            } else if (i.status == 4) {    // when there's an Incomplete order
+                new OrderMakingWindow(dbConn, i.orderNo);
+                return true;
             }
         }
 
