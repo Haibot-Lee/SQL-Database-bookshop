@@ -227,6 +227,19 @@ public class DBConn {
         return stock;   // -1: Book does not exist  0: Out of stock  others: Book in stocks
     }
 
+
+    public void confirmOrder(String orderNo) {
+        try {
+            Statement stm = conn.createStatement();
+            String sql = "UPDATE ORDERS SET status = 0 WHERE order_no = '" + orderNo + "'";
+            stm.executeUpdate(sql);
+            stm.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
     public void cancelOrder(String orderNo){
         try {
             CallableStatement cs = conn.prepareCall("{CALL cancel_status_books_and_order(?,?,?)}");

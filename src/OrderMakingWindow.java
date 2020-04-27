@@ -104,7 +104,10 @@ public class OrderMakingWindow {
             addBook();
             refresh();
         });
-        b2.addActionListener(e -> omPage.dispose());
+        b2.addActionListener(e -> {
+            dbConn.confirmOrder(oid);
+            omPage.dispose();
+        });
     }
 
     private void addBook() {
