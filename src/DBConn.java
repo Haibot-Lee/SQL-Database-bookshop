@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.CallableStatement;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,55 +30,36 @@ public class DBConn {
     private String fwHost = "localhost";
     private int fwPort;
 
-    public DBConn(String dbuser, String dbpw) {
+    public DBConn(String dbuser, String dbpw) throws SQLException {
         loginDB(dbuser, dbpw);
     }
 
-    public DBConn(String dbUser, String dbPw, String proxyHost, int proxyPort, String proxyUser, String proxyPw) {
+    public DBConn(String dbUser, String dbPw, String proxyHost, int proxyPort, String proxyUser, String proxyPw) throws JSchException, SQLException {
         loginProxy(proxyHost, proxyPort, proxyUser, proxyPw);
         loginDB(dbUser, dbPw);
-
-        // TODO: Handle exceptions, such as network failure. Consider GUI. Maybe let the
-        //      two method throw exceptions instead of returning booleans?
     }
 
-    public boolean loginDB(String dbuser, String dbpw) {
+    public void loginDB(String dbuser, String dbpw) throws SQLException {
         String url = "jdbc:oracle:thin:@" + jdbcHost + ":" + jdbcPort + "/" + database;
-        System.out.println("Logging in database: " + url);
-        try {
-            conn = DriverManager.getConnection(url, dbuser, dbpw);
-            System.out.println("Database connected: " + database);
-            return true;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
+        conn = DriverManager.getConnection(url, dbuser, dbpw);
     }
 
 
-    public boolean loginProxy(String host, int port, String user, String pw) {
-        System.out.println("Logging in proxy: " + host + ":" + port);
-        try {
-            proxySession = new JSch().getSession(user, host, port);
-            proxySession.setPassword(pw);
+    public void loginProxy(String host, int port, String user, String pw) throws JSchException {
+        proxySession = new JSch().getSession(user, host, port);
+        proxySession.setPassword(pw);
 
-            Properties config = new Properties();
-            config.put("StrictHostKeyChecking", "no");
-            proxySession.setConfig(config);
+        Properties config = new Properties();
+        config.put("StrictHostKeyChecking", "no");
+        proxySession.setConfig(config);
 
-            proxySession.connect();
-            proxySession.setPortForwardingL(fwHost, 0, dbHost, dbPort);
-            fwPort = Integer.parseInt(proxySession.getPortForwardingL()[0].split(":")[0]);
+        proxySession.connect();
+        proxySession.setPortForwardingL(fwHost, 0, dbHost, dbPort);
+        fwPort = Integer.parseInt(proxySession.getPortForwardingL()[0].split(":")[0]);
 
-        } catch (JSchException e) {
-            e.printStackTrace();
-            return false;
-        }
         jdbcHost = fwHost;
         jdbcPort = fwPort;
-        return true;
     }
-
 
     public void orderMaking(String orderNo, String stuNo, Date orderDate, String payMethod, String cardNo) {
         try {
@@ -98,13 +78,6 @@ public class DBConn {
         }
     }
 
-    /**
-     * Add %qty% books into the designated order.
-     *
-     * @param orderNo ORDER_NO
-     * @param bookNo  BOOK_NO
-     * @param qty     quantity to add
-     */
     public void addBook(String orderNo, String bookNo, int qty) {
         try {
             CallableStatement cs = conn.prepareCall("{CALL ADD_BOOK_IN_ORDER('" + orderNo +
@@ -174,20 +147,13 @@ public class DBConn {
         return books;
     }
 
-    public void orderUpdate(String orderNo, String bookNo, Date date) {
-        try {
-            CallableStatement cs = conn.prepareCall("{CALL update_status_books_and_order(?,?,?)}");
-            cs.setString(1, orderNo);
-            cs.setString(2, bookNo);
-            cs.setDate(3, new java.sql.Date(new Date().getTime()));
-            System.out.println("call prepared");
-
-            cs.execute();
-            System.out.println("executed");
-            cs.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    public void orderUpdate(String orderNo, String bookNo, Date date) throws SQLException {
+        CallableStatement cs = conn.prepareCall("{CALL update_status_books_and_order(?,?,?)}");
+        cs.setString(1, orderNo);
+        cs.setString(2, bookNo);
+        cs.setDate(3, new java.sql.Date(new Date().getTime()));
+        cs.execute();
+        cs.close();
     }
 
     public List<String> selectSid() {
@@ -229,28 +195,22 @@ public class DBConn {
         return stock;   // -1: Book does not exist  0: Out of stock  others: Book in stocks
     }
 
-    public void cancelOrder(String orderNo) {
-        try {
-            CallableStatement cs = conn.prepareCall("{CALL cancel_status_books_and_order(?,?,?)}");
-            Statement stm = conn.createStatement();
-            String sql = "SELECT * FROM BOOK_IN_ORDERS WHERE order_no = '" + orderNo + "'";
-            ResultSet rs = stm.executeQuery(sql);
-            while (rs.next()) {
-                cs.setString(1, rs.getString(1));
-                cs.setString(2, rs.getString(2));
-                cs.setString(3, rs.getString(3));
-                System.out.println("call prepared");
-                cs.execute();
-                System.out.println("executed");
-            }
-            String sql2 = "UPDATE ORDERS SET status = 3 WHERE ORDERS.order_no = '" + orderNo + "' AND status = 0";
-            stm.executeQuery(sql2);
-            cs.close();
-            rs.close();
-            stm.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public void cancelOrder(String orderNo) throws SQLException {
+        CallableStatement cs = conn.prepareCall("{CALL cancel_status_books_and_order(?,?,?)}");
+        Statement stm = conn.createStatement();
+        String sql = "SELECT * FROM BOOK_IN_ORDERS WHERE order_no = '" + orderNo + "'";
+        ResultSet rs = stm.executeQuery(sql);
+        while (rs.next()) {
+            cs.setString(1, rs.getString(1));
+            cs.setString(2, rs.getString(2));
+            cs.setString(3, rs.getString(3));
+            cs.execute();
         }
+        String sql2 = "UPDATE ORDERS SET status = 3 WHERE ORDERS.order_no = '" + orderNo + "' AND status = 0";
+        stm.executeQuery(sql2);
+        cs.close();
+        rs.close();
+        stm.close();
     }
 
 }

@@ -1,9 +1,12 @@
+import com.jcraft.jsch.JSchException;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
@@ -149,6 +152,10 @@ public class OBS {
                 payInfo[1] = cardNo.getText();
             }
 
+            if (payInfo[1].equals("")) {
+                JOptionPane.showMessageDialog(null, "Please Input your credit No.!", "", JOptionPane.ERROR_MESSAGE);
+            }
+
         } while (payInfo[0].equals("Credit card") && payInfo[1].equals(""));
 
         return payInfo;
@@ -221,15 +228,38 @@ public class OBS {
         confirm.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                boolean ifLogin = false;
                 if (ifUseProxy.isSelected()) {
-//                    OBS obs = new OBS(new DBConn(dbUserName.getText(), new String(dbUserPasw.getPassword()),
+                    try {
+//                        OBS obs = new OBS(new DBConn(dbUserName.getText(), new String(dbUserPasw.getPassword()),
 //                            proxyHost.getText(), Integer.parseInt(proxyPort.getText()), proxyUserName.getText(), new String(proxyUserPasw.getPassword())));
-                    OBS obs = new OBS(new DBConn("e8252125", "e8252125",
-                            "faith.comp.hkbu.edu.hk", 22, "e8252125", "Input your own password"));
-                    login.dispose();
+                        OBS obs = new OBS(new DBConn("e825215", "e8252125",
+                                "faith.comp.hkbu.edu.hk", 22, "e8252125", ""));
+                        ifLogin = true;
+                    } catch (JSchException ex) {
+                        String errorMess = "Fail to login proxy: ";
+                        if (ex.getCause() instanceof java.net.UnknownHostException)
+                            errorMess += "please check your proxy host address!";
+                        else if (ex.getCause() instanceof java.net.ConnectException)
+                            errorMess = errorMess + "please check your proxy port";
+                        else
+                            errorMess = errorMess + "please check your user name/password!";
+
+                        JOptionPane.showMessageDialog(null, errorMess, "", JOptionPane.ERROR_MESSAGE);
+                    } catch (SQLException ex) {
+                        JOptionPane.showMessageDialog(null, "Fail to login database: please check your user name/password!", "", JOptionPane.ERROR_MESSAGE);
+                    }
                 } else {
-//                    OBS obs = new OBS(new DBConn(dbUserName.getText(), dbUserPasw.getText());
-                    OBS obs = new OBS(new DBConn("e8252125", "e8252125"));
+                    try {
+//                        OBS obs = new OBS(new DBConn(dbUserName.getText(), dbUserPasw.getText());
+                        OBS obs = new OBS(new DBConn("e8252125", "e8252125"));
+                        ifLogin = true;
+                    } catch (SQLException ex) {
+                        JOptionPane.showMessageDialog(null, "Fail to login database: please check your user name/password!", "", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+
+                if (ifLogin == true) {
                     login.dispose();
                 }
             }

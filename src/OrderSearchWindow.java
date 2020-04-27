@@ -7,6 +7,7 @@ import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -23,7 +24,6 @@ public class OrderSearchWindow {
     JXTreeTable jxTable;
     Button b1;
     Button b2;
-    JLabel jdisplay;
 
     Node selectedNode;
 
@@ -89,18 +89,16 @@ public class OrderSearchWindow {
 
         b1 = new Button("Order Update");
         b2 = new Button("Order Cancelling");
-        jdisplay = new JLabel();
         b1.setEnabled(false);
         b2.setEnabled(false);
         b1.setBounds(840, 50, 100, 40);
         b2.setBounds(840, 150, 100, 40);
-        jdisplay.setBounds(840, 200, 200, 40);
         b1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (selectedNode.getParent() != null &&
                         !((String[]) selectedNode.getParent().getUserObject())[3].equals("Confirmed") &&
                         !((String[]) selectedNode.getParent().getUserObject())[3].equals("Shipping")) {
-                    jdisplay.setText("The order is already " + ((String[]) selectedNode.getParent().getUserObject())[3] + "!");
+                    JOptionPane.showMessageDialog(null, "The order is already " + ((String[]) selectedNode.getParent().getUserObject())[3] + "!", "", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
                 updateOrder(orderNo[0], bookNo[0]);
@@ -117,7 +115,6 @@ public class OrderSearchWindow {
 
         osc.add(b1);
         osc.add(b2);
-        osc.add(jdisplay);
         osc.add(pane);
         osPage.setVisible(true);
     }
@@ -136,11 +133,25 @@ public class OrderSearchWindow {
     }
 
     private void updateOrder(String orderNo, String bookNo) {
-        dbConn.orderUpdate(orderNo, bookNo, new Date());
-        // TODO Handle exceptions
+        try {
+            dbConn.orderUpdate(orderNo, bookNo, new Date());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private void orderCancelling(String orderNo) {
-        dbConn.cancelOrder(orderNo);
+        try {
+            dbConn.cancelOrder(orderNo);
+        } catch (SQLException e) {
+            if (e.getErrorCode() == -20001)
+                JOptionPane.showMessageDialog(null, "Some book(s) in this order is already delivered!", "", JOptionPane.ERROR_MESSAGE);
+            else if (e.getErrorCode() == -20002)
+                JOptionPane.showMessageDialog(null, "Wrong status: The order is already completed!", "", JOptionPane.ERROR_MESSAGE);
+            else if (e.getErrorCode() == -20003)
+                JOptionPane.showMessageDialog(null, "Wrong status: The order is already cancelled!", "", JOptionPane.ERROR_MESSAGE);
+            else if (e.getErrorCode() == -20017)
+                JOptionPane.showMessageDialog(null, "This order is made over 7 days!", "", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }
