@@ -24,7 +24,7 @@ CREATE TABLE ORDERS
     order_no    CHAR(10),
     stu_no      CHAR(8)     NOT NULL,
     order_date  DATE        NOT NULL,
-    status      INT  DEFAULT 0, -- 0可以取消，1不可取消，2completed， 3canceled
+    status      INT  DEFAULT 4, -- 0: Confirmed; 1: Shipping; 2: Completed; 3: Cancelled; 4: Incomplete;
     total_price REAL DEFAULT 0,
     pay_method  VARCHAR(30) not null,
     card_no     CHAR(16),
@@ -51,11 +51,16 @@ CREATE OR REPLACE TRIGGER addCancel_disLevel_constraint
 DECLARE
     c REAL;
 BEGIN
-    IF :new.status = 0 THEN --add or delete book
+    -- TODO: Incomplete也能直接到Cancel -- CHANGE TRIGGER
+    -- DONE: Change update condition: when ORDER.status 4 --> 0 (button confirm)
+    -- DONE: Deny 4 --> 3  [DONE!]
+    -- DONE: Deny 4 --> 1/2 [DONE in java: only Confirmed or Shipping status allows update delivery]
+    -- DONE: Continue editing an incomplete order (button order making)
+    IF :old.status = 4 AND :new.status = 0 THEN -- Incomplete --> Confirmed
         UPDATE STUDENTS
-        SET total_order = total_order + (:new.total_price - :old.total_price)
+        SET total_order = total_order + (:old.total_price)
         WHERE stu_no = :new.stu_no;
-    ELSIF :new.status = 3 THEN -- cancel order
+    ELSIF :old.status = 0 AND :new.status = 3 THEN -- Confirmed --> Cancelled
         UPDATE STUDENTS
         SET total_order = total_order - :old.total_price
         WHERE stu_no = :new.stu_no;
@@ -174,12 +179,16 @@ CREATE OR REPLACE PROCEDURE cancel_status_books_and_order(o_no CHAR, b_no CHAR, 
     dt DATE;
 BEGIN
     SELECT status INTO s FROM ORDERS WHERE ORDERS.order_no = o_no;
-    IF s != 0 THEN
-        RAISE_APPLICATION_ERROR(-10000, 'INVALID ORDER STATUS');
+    IF s = 1 THEN
+        RAISE_APPLICATION_ERROR(-20001, 'SHIPPING');
+    ELSIF s = 2 THEN
+        RAISE_APPLICATION_ERROR(-20002, 'COMPLETED');
+    ELSIF s = 3 THEN
+        RAISE_APPLICATION_ERROR(-20003, 'CANCELLED');
     END IF;
     SELECT order_date INTO dt FROM ORDERS WHERE ORDERS.order_no = o_no;
     IF (CURRENT_DATE-dt) > 7 THEN
-        RAISE_APPLICATION_ERROR(-10001, 'INVALID ORDER DATE');
+        RAISE_APPLICATION_ERROR(-20017, 'INVALID ORDER DATE');
     END IF;
     UPDATE BOOKS SET stock = stock + st_qty
     WHERE BOOKS.book_no = b_no;
@@ -188,7 +197,7 @@ END;
 /
 
 INSERT INTO STUDENTS
-VALUES ('11111111', 'Kurt', 'M', 'COMP', 1630, 0.1);
+VALUES ('11111111', 'Kurt', 'M', 'COMP', 1900, 0.1);
 INSERT INTO STUDENTS
 VALUES ('22222222', 'Rex', 'M', 'COMP', 300, 0);
 INSERT INTO STUDENTS
