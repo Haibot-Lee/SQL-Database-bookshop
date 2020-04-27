@@ -51,10 +51,11 @@ CREATE OR REPLACE TRIGGER addCancel_disLevel_constraint
 DECLARE
     c REAL;
 BEGIN
-    -- TODO: Change update condition: when ORDER.status -1 --> 0 (button confirm)
-    -- TODO: Deny -1 --> 3  [DONE!]
-    -- TODO: Deny -1 --> 1/2
-    -- TODO: Continue editing an incomplete order (button order making)
+    -- TODO: Incomplete也能直接到Cancel -- CHANGE TRIGGER
+    -- DONE: Change update condition: when ORDER.status 4 --> 0 (button confirm)
+    -- DONE: Deny 4 --> 3  [DONE!]
+    -- DONE: Deny 4 --> 1/2 [DONE in java: only Confirmed or Shipping status allows update delivery]
+    -- DONE: Continue editing an incomplete order (button order making)
     IF :old.status = 4 AND :new.status = 0 THEN -- Incomplete --> Confirmed
         UPDATE STUDENTS
         SET total_order = total_order + (:old.total_price)
