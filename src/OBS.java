@@ -244,13 +244,15 @@ public class OBS {
                         if (ex.getCause() instanceof java.net.UnknownHostException)
                             errorMess += "please check your proxy host address!";
                         else if (ex.getCause() instanceof java.net.ConnectException)
-                            errorMess = errorMess + "please check your proxy port";
-                        else
-                            errorMess = errorMess + "please check your user name/password!";
+                            errorMess = errorMess + ex.getCause().getMessage();
+                        else {
+                            errorMess = errorMess + "please check your user name/password!";}
 
                         JOptionPane.showMessageDialog(null, errorMess, "", JOptionPane.ERROR_MESSAGE);
                     } catch (SQLException ex) {
                         JOptionPane.showMessageDialog(null, "Fail to login database: please check your user name/password!", "", JOptionPane.ERROR_MESSAGE);
+                    } catch (NumberFormatException ex) {
+                        JOptionPane.showMessageDialog(null, "Invalid Port", "", JOptionPane.ERROR_MESSAGE);
                     }
                 } else {
                     try {
