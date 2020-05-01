@@ -24,7 +24,7 @@ CREATE TABLE ORDERS
     order_no    CHAR(10),
     stu_no      CHAR(8)     NOT NULL,
     order_date  DATE        NOT NULL,
-    status      INT  DEFAULT 4, -- 0: Confirmed; 1: Shipping; 2: Completed; 3: Cancelled; 4: Incomplete;
+    status      INT  DEFAULT 4, -- 0: Confirmed; 1: Shipping; 2: Completed; 3: Cancelled; 4: Incomplete
     total_price REAL DEFAULT 0,
     pay_method  VARCHAR(30) not null,
     card_no     CHAR(16),
@@ -194,7 +194,7 @@ END;
 INSERT INTO STUDENTS
 VALUES ('11111111', 'Kurt', 'M', 'COMP', 1900, 0.1);
 INSERT INTO STUDENTS
-VALUES ('22222222', 'Rex', 'M', 'COMP', 600, 0);
+VALUES ('22222222', 'Rex', 'M', 'COMP', 900, 0);
 INSERT INTO STUDENTS
 VALUES ('33333333', 'Jerry', 'M', 'COMP', 300, 0);
 
