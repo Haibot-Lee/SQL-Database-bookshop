@@ -213,30 +213,14 @@ public class DBConn {
         Statement stm = conn.createStatement();
         String sql = "SELECT * FROM BOOK_IN_ORDERS WHERE order_no = '" + orderNo + "'";
         ResultSet rs = stm.executeQuery(sql);
-        if(rs.next() == false){
-            String sql2 = "SELECT status AS s FROM ORDERS WHERE ORDERS.order_no = '"+orderNo+"';\n" +
-                    "    IF s = 1 THEN\n" +
-                    "        RAISE_APPLICATION_ERROR(-20001, 'SHIPPING');\n" +
-                    "    ELSIF s = 2 THEN\n" +
-                    "        RAISE_APPLICATION_ERROR(-20002, 'COMPLETED');\n" +
-                    "    ELSIF s = 3 THEN\n" +
-                    "        RAISE_APPLICATION_ERROR(-20003, 'CANCELLED');\n" +
-                    "    END IF;\n" +
-                    "    SELECT order_date AS dt FROM ORDERS WHERE ORDERS.order_no = '"+orderNo+"';\n" +
-                    "    IF (CURRENT_DATE-dt) > 7 THEN\n" +
-                    "        RAISE_APPLICATION_ERROR(-20017, 'INVALID ORDER DATE');\n" +
-                    "    END IF;";
-            stm.executeQuery(sql2);
-        }else {
-            do {
-                cs.setString(1, rs.getString(1));
-                cs.setString(2, rs.getString(2));
-                cs.setString(3, rs.getString(3));
-                cs.execute();
-            }while (rs.next());
+        while (rs.next()) {
+            cs.setString(1, rs.getString(1));
+            cs.setString(2, rs.getString(2));
+            cs.setString(3, rs.getString(3));
+            cs.execute();   // APPLICATION_ERRORS are caught here
         }
-        String sql3 = "UPDATE ORDERS SET status = 3 WHERE ORDERS.order_no = '" + orderNo + "' AND status = 0";
-        stm.executeQuery(sql3);
+        String sql2 = "UPDATE ORDERS SET status = 3 WHERE ORDERS.order_no = '" + orderNo + "' AND status = 0";
+        stm.executeQuery(sql2);
         cs.close();
         rs.close();
         stm.close();
