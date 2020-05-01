@@ -71,7 +71,7 @@ END;
 .
 /
 
--- Calculating total_price of an Order
+-- Calculating total_price of an objects.Order
 CREATE OR REPLACE TRIGGER total_price_stock_insert
     AFTER INSERT
     ON BOOK_IN_ORDERS

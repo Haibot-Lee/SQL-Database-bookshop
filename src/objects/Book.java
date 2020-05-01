@@ -1,9 +1,11 @@
+package objects;
+
 public class Book {
-    final String bookNo;
-    final String title;
-    final String author;
-    final float price;
-    final int stock;
+    public final String bookNo;
+    public final String title;
+    public final String author;
+    public final float price;
+    public final int stock;
 
     public Book(String bookNo, String title, String author, float price, int stock) {
         this.bookNo = bookNo;

@@ -1,3 +1,5 @@
+package gui.tables;
+
 import javax.swing.table.DefaultTableModel;
 
 public class BookTableModel extends DefaultTableModel {

@@ -1,4 +1,8 @@
+package gui.windows;
+
 import com.jcraft.jsch.JSchException;
+import connection.DBConn;
+import objects.Order;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,10 +14,10 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
-public class OBS {
+public class HomeWindow {
     DBConn dbConn;
 
-    public OBS(DBConn dbConn) {
+    public HomeWindow(DBConn dbConn) {
         this.dbConn = dbConn;
 
         List<String> sids = dbConn.selectSid();
@@ -24,8 +28,8 @@ public class OBS {
         c.setLayout(new GridLayout(4, 1, 20, 20));
         c.add(new JLabel("Welcome to Online University Bookshop! Please choose one function!", SwingConstants.CENTER));
 
-        Button b1 = new Button("Order Search");
-        Button b2 = new Button("Order Making");
+        Button b1 = new Button("objects.Order Search");
+        Button b2 = new Button("objects.Order Making");
         b1.setBounds(50, 300, 200, 50);
         b1.setBounds(200, 300, 100, 50);
         c.add(b1);
@@ -234,7 +238,7 @@ public class OBS {
                 boolean ifLogin = false;
                 if (ifUseProxy.isSelected()) {
                     try {
-                        OBS obs = new OBS(new DBConn(dbUserName.getText(), new String(dbUserPasw.getPassword()),
+                        HomeWindow homeWindow = new HomeWindow(new DBConn(dbUserName.getText(), new String(dbUserPasw.getPassword()),
                                 proxyHost.getText(), Integer.parseInt(proxyPort.getText()), proxyUserName.getText(), new String(proxyUserPasw.getPassword())));
                         ifLogin = true;
                     } catch (JSchException ex) {
@@ -255,7 +259,7 @@ public class OBS {
                     }
                 } else {
                     try {
-                        OBS obs = new OBS(new DBConn(dbUserName.getText(), new String(dbUserPasw.getPassword())));
+                        HomeWindow homeWindow = new HomeWindow(new DBConn(dbUserName.getText(), new String(dbUserPasw.getPassword())));
                         ifLogin = true;
                     } catch (SQLException ex) {
                         JOptionPane.showMessageDialog(null, "Fail to login database: please check your user name/password!", "", JOptionPane.ERROR_MESSAGE);

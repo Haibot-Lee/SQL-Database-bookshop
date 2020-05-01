@@ -1,3 +1,10 @@
+package gui.windows;
+
+import connection.DBConn;
+import gui.tables.Node;
+import gui.tables.OrderInfoTable;
+import objects.BookInOrder;
+import objects.Order;
 import org.jdesktop.swingx.JXTreeTable;
 
 import javax.swing.*;
@@ -66,7 +73,7 @@ public class OrderSearchWindow {
                 if (path == null) return;      // to prevent trigger this listener when refreshing the table
                 selectedNode = table.getNode(path);
                 // Disable selection for subheading rows
-                if (((String[]) selectedNode.getUserObject())[0].equals("<Order No.>")) {
+                if (((String[]) selectedNode.getUserObject())[0].equals("<objects.Order No.>")) {
                     jxTable.clearSelection();
                     b1.setEnabled(false);
                     b2.setEnabled(false);
@@ -77,18 +84,18 @@ public class OrderSearchWindow {
 
                 System.out.println(orderNo[0]);
                 System.out.println(bookNo[0]);
-                if (selectedNode.isLeaf()) {    // Book selected
+                if (selectedNode.isLeaf()) {    // objects.Book selected
                     b1.setEnabled(true);
                     b2.setEnabled(false);
-                } else {    // Order selected
+                } else {    // objects.Order selected
                     b1.setEnabled(false);
                     b2.setEnabled(true);
                 }
             }
         });
 
-        b1 = new Button("Order Update");
-        b2 = new Button("Order Cancelling");
+        b1 = new Button("objects.Order Update");
+        b2 = new Button("objects.Order Cancelling");
         b1.setEnabled(false);
         b2.setEnabled(false);
         b1.setBounds(840, 50, 100, 40);

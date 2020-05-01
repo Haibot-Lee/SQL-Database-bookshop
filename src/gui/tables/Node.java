@@ -1,6 +1,8 @@
+package gui.tables;
+
 import org.jdesktop.swingx.treetable.AbstractMutableTreeTableNode;
 
-class Node extends AbstractMutableTreeTableNode {
+public class Node extends AbstractMutableTreeTableNode {
     public Node(Object[] data) {
         super(data);
     }

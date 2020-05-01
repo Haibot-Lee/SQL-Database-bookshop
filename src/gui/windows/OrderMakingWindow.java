@@ -1,3 +1,11 @@
+package gui.windows;
+
+import connection.DBConn;
+import gui.tables.BookInOrderTable;
+import gui.tables.StockTable;
+import objects.Book;
+import objects.BookInOrder;
+
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -36,13 +44,13 @@ public class OrderMakingWindow {
     }
 
     private void initialize() {
-        omPage = new JFrame("Order Making");
+        omPage = new JFrame("objects.Order Making");
         omPage.setLayout(new GridLayout(1, 2));
         omPage.setSize(1000, 800);
         omPage.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         omc = omPage.getContentPane();
 
-        // Book in stock Table
+        // objects.Book in stock Table
         stockTable = new StockTable(books);
         bookPane = new JScrollPane(stockTable.getTable());
         omc.add(bookPane);
@@ -61,7 +69,7 @@ public class OrderMakingWindow {
         addBooks.setLayout(new GridLayout(2, 1));
         omc.add(addBooks);
 
-        // Book in order Table
+        // objects.Book in order Table
         bookInOrderTable = new BookInOrderTable(bookInOrder);
         bookInOrderPane = new JScrollPane(bookInOrderTable.getTable());
         addBooks.add(bookInOrderPane);
@@ -71,7 +79,7 @@ public class OrderMakingWindow {
         options.setLayout(null);
         addBooks.add(options);
 
-        bookL = new JLabel("Book No.:");
+        bookL = new JLabel("objects.Book No.:");
         bookT = new JTextField(100);
         qtyL = new JLabel("Quantity:");
         qtyS = new JSpinner(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));

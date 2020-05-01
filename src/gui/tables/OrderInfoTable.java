@@ -1,7 +1,10 @@
-/*
+package gui.tables;/*
  * References: https://www.youtube.com/watch?v=UDLr_LYnLv0
  */
 
+import gui.tables.Node;
+import objects.BookInOrder;
+import objects.Order;
 import org.jdesktop.swingx.JXTreeTable;
 import org.jdesktop.swingx.treetable.DefaultTreeTableModel;
 import javax.swing.tree.TreePath;
@@ -10,7 +13,7 @@ import java.util.List;
 
 public class OrderInfoTable {
 
-    private String[] headings = {"Order No.", "Student No.", "Order Date", "Status",
+    private String[] headings = {"objects.Order No.", "Student No.", "objects.Order Date", "Status",
                                     "Total Price", "Payment Method", "Card No"};
     private Node root;
     private DefaultTreeTableModel model;
@@ -38,7 +41,7 @@ public class OrderInfoTable {
                     String.valueOf(o.totalPrice), o.payMethod, o.cardNo});
             root.add(order);
             // Add books under current order
-            String[] subheadings = {"<Order No.>", "<Book No.>", "<Title>", "<Quantity>", "<Delivery>", "---", "---"};
+            String[] subheadings = {"<objects.Order No.>", "<objects.Book No.>", "<Title>", "<Quantity>", "<Delivery>", "---", "---"};
             order.add(new Node(subheadings));
             for (BookInOrder b : bookInOrders[i]) {
                 Node book = new Node (new String[] {o.orderNo, b.bookNo, b.title, String.valueOf(b.qty),

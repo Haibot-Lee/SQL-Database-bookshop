@@ -1,13 +1,15 @@
+package objects;
+
 import java.util.Date;
 
 public class Order {
-    final String orderNo;
-    final String stuNo;
-    final Date orderDate;
-    final int status;
-    final float totalPrice;
-    final String payMethod;
-    final String cardNo;
+    public final String orderNo;
+    public final String stuNo;
+    public final Date orderDate;
+    public final int status;
+    public final float totalPrice;
+    public final String payMethod;
+    public final String cardNo;
     // About "final": the data in the object should be retrieved from online DB.
     //      Thus, local update is not allowed.
 
@@ -24,7 +26,7 @@ public class Order {
 
     @Override
     public String toString() {
-        return "Order{" +
+        return "objects.Order{" +
                 "orderNo='" + orderNo + '\'' +
                 ", stuNo='" + stuNo + '\'' +
                 ", orderDate=" + orderDate +

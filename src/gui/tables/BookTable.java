@@ -1,11 +1,14 @@
+package gui.tables;
+
+import gui.tables.BookTableModel;
+
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.util.List;
 
 /**
  * This class is extended by:
- *      * StockTable, which shows the information of Books in stock;
- *      * BookInOrderTable, which shows the information of BookInOrders
+ *      * gui.tables.StockTable, which shows the information of Books in stock;
+ *      * gui.tables.BookInOrderTable, which shows the information of BookInOrders
  *          in current order;
  *      (I admit that the naming is a bit confusing...)
  */

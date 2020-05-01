@@ -1,3 +1,5 @@
+package connection;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.sql.Connection;
@@ -12,6 +14,9 @@ import java.util.List;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+import objects.Book;
+import objects.BookInOrder;
+import objects.Order;
 
 import java.util.Properties;
 
@@ -192,7 +197,7 @@ public class DBConn {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return stock;   // -1: Book does not exist  0: Out of stock  others: Book in stocks
+        return stock;   // -1: objects.Book does not exist  0: Out of stock  others: objects.Book in stocks
     }
 
 
