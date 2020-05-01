@@ -1,8 +1,9 @@
-package gui.tables;/*
+/*
  * References: https://www.youtube.com/watch?v=UDLr_LYnLv0
  */
 
-import gui.tables.Node;
+package gui.tables;
+
 import objects.BookInOrder;
 import objects.Order;
 import org.jdesktop.swingx.JXTreeTable;
