@@ -1,14 +1,12 @@
 package gui.tables;
 
-import gui.tables.BookTable;
 import objects.BookInOrder;
-
 import java.util.List;
 
 public class BookInOrderTable extends BookTable {
 
     public BookInOrderTable(List<BookInOrder> bookInOrders) {
-        super(bookInOrders, new String[] {"objects.Book No.", "Title", "Quantity"});
+        super(bookInOrders, new String[] {"Book No.", "Title", "Quantity"});
     }
     @Override
     void importData() {

@@ -1,6 +1,5 @@
 package gui.tables;
 
-import gui.tables.BookTable;
 import objects.Book;
 
 import java.util.List;
@@ -9,7 +8,7 @@ public class StockTable extends BookTable {
 
 
     public StockTable(List<Book> books) {
-        super(books, new String[] {"objects.Book No.", "objects.Book Title", "Author", "Price", "Stock"});
+        super(books, new String[] {"Book No.", "Book Title", "Author", "Price", "Stock"});
     }
 
     void importData() {
