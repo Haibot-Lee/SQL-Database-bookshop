@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.sql.SQLException;
+import java.sql.SQLRecoverableException;
 import java.util.Date;
 import java.util.List;
 
@@ -28,8 +29,8 @@ public class HomeWindow {
         c.setLayout(new GridLayout(4, 1, 20, 20));
         c.add(new JLabel("Welcome to Online University Bookshop! Please choose one function!", SwingConstants.CENTER));
 
-        Button b1 = new Button("objects.Order Search");
-        Button b2 = new Button("objects.Order Making");
+        Button b1 = new Button("Search");
+        Button b2 = new Button("New Order");
         b1.setBounds(50, 300, 200, 50);
         b1.setBounds(200, 300, 100, 50);
         c.add(b1);
@@ -241,8 +242,9 @@ public class HomeWindow {
                         ifLogin = true;
                     } catch (JSchException ex) {
                         String errorMess = "Fail to login proxy: ";
-                        if (ex.getCause() instanceof java.net.UnknownHostException)
-                            errorMess += "please check your proxy host address!";
+                        if (ex.getCause() instanceof java.net.UnknownHostException){
+                            ex.printStackTrace();
+                            errorMess += "please check your proxy host address and network!";}
                         else if (ex.getCause() instanceof java.net.ConnectException)
                             errorMess = errorMess + ex.getCause().getMessage();
                         else {
@@ -260,7 +262,11 @@ public class HomeWindow {
                         HomeWindow homeWindow = new HomeWindow(new DBConn(dbUserName.getText(), new String(dbUserPasw.getPassword())));
                         ifLogin = true;
                     } catch (SQLException ex) {
-                        JOptionPane.showMessageDialog(null, "Fail to login database: please check your user name/password!", "", JOptionPane.ERROR_MESSAGE);
+                        if (ex instanceof SQLRecoverableException) {
+                            JOptionPane.showMessageDialog(null, ex.getMessage() + ": Check your network connection or use SSH.", "", JOptionPane.ERROR_MESSAGE);
+                        } else {
+                            JOptionPane.showMessageDialog(null, ex.getMessage() + ": Check your user name/password!", "", JOptionPane.ERROR_MESSAGE);
+                        }
                     }
                 }
 

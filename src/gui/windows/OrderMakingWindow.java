@@ -44,7 +44,7 @@ public class OrderMakingWindow {
     }
 
     private void initialize() {
-        omPage = new JFrame("objects.Order Making");
+        omPage = new JFrame("New Order");
         omPage.setLayout(new GridLayout(1, 2));
         omPage.setSize(1000, 800);
         omPage.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -79,7 +79,7 @@ public class OrderMakingWindow {
         options.setLayout(null);
         addBooks.add(options);
 
-        bookL = new JLabel("objects.Book No.:");
+        bookL = new JLabel("Book No.:");
         bookT = new JTextField(100);
         qtyL = new JLabel("Quantity:");
         qtyS = new JSpinner(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
@@ -135,7 +135,7 @@ public class OrderMakingWindow {
                 ifAdd.setVisible(true);
                 return;
             } else if (stock < qty) {
-                ifAdd.setText("<html>Fail to add books: This book(book No:" + book_no + ") is out of stock!<br>Remaining quantity: " + stock + "</html>");
+                ifAdd.setText("<html>Fail to add books: Stock of the book(book No:" + book_no + ") is not enough!<br>Remaining quantity: " + stock + "</html>");
                 ifAdd.setVisible(true);
                 return;
             }

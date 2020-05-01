@@ -73,7 +73,7 @@ public class OrderSearchWindow {
                 if (path == null) return;      // to prevent trigger this listener when refreshing the table
                 selectedNode = table.getNode(path);
                 // Disable selection for subheading rows
-                if (((String[]) selectedNode.getUserObject())[0].equals("<objects.Order No.>")) {
+                if (((String[]) selectedNode.getUserObject())[0].equals("<Order No.>")) {
                     jxTable.clearSelection();
                     b1.setEnabled(false);
                     b2.setEnabled(false);
@@ -94,8 +94,8 @@ public class OrderSearchWindow {
             }
         });
 
-        b1 = new Button("objects.Order Update");
-        b2 = new Button("objects.Order Cancelling");
+        b1 = new Button("Mark Delivered");
+        b2 = new Button("Cancel Order");
         b1.setEnabled(false);
         b2.setEnabled(false);
         b1.setBounds(840, 50, 100, 40);
@@ -143,7 +143,7 @@ public class OrderSearchWindow {
         try {
             dbConn.orderUpdate(orderNo, bookNo, new Date());
         } catch (SQLException e) {
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, e.getMessage(), "", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -160,6 +160,8 @@ public class OrderSearchWindow {
                 JOptionPane.showMessageDialog(null, "Wrong status: The order is already cancelled!", "", JOptionPane.ERROR_MESSAGE);
             else if (e.getErrorCode() == 20017)
                 JOptionPane.showMessageDialog(null, "This order is made over 7 days!", "", JOptionPane.ERROR_MESSAGE);
+            else
+                JOptionPane.showMessageDialog(null, e.getMessage(), "", JOptionPane.ERROR_MESSAGE);
         }
     }
 }
