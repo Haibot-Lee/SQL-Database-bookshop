@@ -157,12 +157,10 @@ public class HomeWindow {
                 dialog2.dispose();
 
                 payInfo[1] = cardNo.getText();
+                if (payInfo[1].equals("")) {
+                    JOptionPane.showMessageDialog(null, "Please Input your credit No.!", "", JOptionPane.ERROR_MESSAGE);
+                }
             }
-
-            if (payInfo[1].equals("")) {
-                JOptionPane.showMessageDialog(null, "Please Input your credit No.!", "", JOptionPane.ERROR_MESSAGE);
-            }
-
         } while (payInfo[0].equals("Credit card") && payInfo[1].equals(""));
 
         return payInfo;
