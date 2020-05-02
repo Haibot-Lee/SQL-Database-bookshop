@@ -29,7 +29,7 @@ public class HomeWindow {
         c.setLayout(new GridLayout(4, 1, 20, 20));
         c.add(new JLabel("Welcome to Online University Bookshop! Please choose one function!", SwingConstants.CENTER));
 
-        Button b1 = new Button("Search");
+        Button b1 = new Button("Search Order");
         Button b2 = new Button("New Order");
         b1.setBounds(50, 300, 200, 50);
         b1.setBounds(200, 300, 100, 50);
