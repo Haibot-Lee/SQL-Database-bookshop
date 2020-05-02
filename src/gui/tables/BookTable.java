@@ -1,7 +1,5 @@
 package gui.tables;
 
-import gui.tables.BookTableModel;
-
 import javax.swing.*;
 import java.util.List;
 
