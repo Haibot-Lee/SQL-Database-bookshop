@@ -105,7 +105,7 @@ public class OrderSearchWindow {
                 if (selectedNode.getParent() != null &&
                         !((String[]) selectedNode.getParent().getUserObject())[3].equals("Confirmed") &&
                         !((String[]) selectedNode.getParent().getUserObject())[3].equals("Shipping")) {
-                    JOptionPane.showMessageDialog(null, "The order is already " + ((String[]) selectedNode.getParent().getUserObject())[3] + "!", "", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "The order is " + ((String[]) selectedNode.getParent().getUserObject())[3] + "!", "", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
                 updateOrder(orderNo[0], bookNo[0]);
