@@ -37,7 +37,7 @@ public class OrderInfoTable {
         for (int i=0; i<orders.size(); i++) {
             // Append current order info to root
             Order o = orders.get(i);
-            String[] status = {"Confirmed", "Shipping", "Completed", "Cancelled", "Incomplete"};
+            String[] status = {"Confirmed", "Shipping", "Completed", "Cancelled", "Unconfirmed"};
             Node order = new Node(new String[] {o.orderNo, o.stuNo, o.orderDate.toString(), status[o.status],
                     String.valueOf(o.totalPrice), o.payMethod, o.cardNo});
             root.add(order);

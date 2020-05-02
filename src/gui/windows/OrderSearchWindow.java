@@ -159,7 +159,7 @@ public class OrderSearchWindow {
             else if (e.getErrorCode() == 20003)
                 JOptionPane.showMessageDialog(null, "Wrong status: The order is already cancelled!", "", JOptionPane.ERROR_MESSAGE);
             else if (e.getErrorCode() == 20004)
-                JOptionPane.showMessageDialog(null, "Wrong status: The order is incomplete!", "", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Wrong status: The order is unconfirmed!", "", JOptionPane.ERROR_MESSAGE);
             else if (e.getErrorCode() == 20017)
                 JOptionPane.showMessageDialog(null, "This order is made over 7 days ago!", "", JOptionPane.ERROR_MESSAGE);
             else
