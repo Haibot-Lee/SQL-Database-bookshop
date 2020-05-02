@@ -18,15 +18,18 @@ import java.util.List;
 public class OrderMakingWindow {
     DBConn dbConn;
     String oid;
+    String sid;
     JFrame omPage;
     JScrollPane bookPane;
     JScrollPane bookInOrderPane;
     Container omc;
+    float totalPrice;
+    float discount;
 
     StockTable stockTable;
     BookInOrderTable bookInOrderTable;
 
-    Panel addBooks, options;
+    Panel addBooks, options, info;
     JLabel bookL;
     JTextField bookT;
     JLabel qtyL;
@@ -36,9 +39,12 @@ public class OrderMakingWindow {
     List<Book> books;
     List<BookInOrder> bookInOrder;
 
-    public OrderMakingWindow(DBConn dbConn, String oid) {
+    JLabel priceL;
+
+    public OrderMakingWindow(DBConn dbConn, String oid, String sid) {
         this.dbConn = dbConn;
         this.oid = oid;
+        this.sid = sid;
         getData();
         initialize();
     }
@@ -50,7 +56,7 @@ public class OrderMakingWindow {
         omPage.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         omc = omPage.getContentPane();
 
-        // objects.Book in stock Table
+        // Book in stock Table
         stockTable = new StockTable(books);
         bookPane = new JScrollPane(stockTable.getTable());
         omc.add(bookPane);
@@ -69,7 +75,7 @@ public class OrderMakingWindow {
         addBooks.setLayout(new GridLayout(2, 1));
         omc.add(addBooks);
 
-        // objects.Book in order Table
+        // Book in order Table
         bookInOrderTable = new BookInOrderTable(bookInOrder);
         bookInOrderPane = new JScrollPane(bookInOrderTable.getTable());
         addBooks.add(bookInOrderPane);
@@ -78,6 +84,16 @@ public class OrderMakingWindow {
         options = new Panel();
         options.setLayout(null);
         addBooks.add(options);
+
+        // Info Panel
+        info = new Panel();
+        info.setLayout(new GridLayout(4, 1));
+        info.setBounds(260,50,200,100);
+        info.add(new JLabel("Order No.: " + oid));
+        info.add(new JLabel("Student No: " + sid));
+        info.add(new JLabel("Discount: " + discount));
+        priceL = new JLabel("Total: " + totalPrice);
+        info.add(priceL);
 
         bookL = new JLabel("Book No.:");
         bookT = new JTextField(100);
@@ -90,9 +106,10 @@ public class OrderMakingWindow {
 
         b1 = new Button("Add");
         b2 = new Button("Confirm");
-        b1.setBounds(300, 100, 100, 40);
+        b1.setBounds(50, 180, 100, 40);
         b2.setBounds(150, 300, 200, 40);
 
+        options.add(info);
         options.add(bookL);
         options.add(bookT);
         options.add(qtyL);
@@ -101,7 +118,7 @@ public class OrderMakingWindow {
         options.add(b2);
 
         ifAdd = new JLabel();
-        ifAdd.setBounds(50, 200, 500, 40);
+        ifAdd.setBounds(50, 250, 500, 40);
         options.add(ifAdd);
         ifAdd.setVisible(false);
 
@@ -149,11 +166,15 @@ public class OrderMakingWindow {
     private void getData() {
         books = dbConn.listBooks();
         bookInOrder = dbConn.searchBookInOrder(oid);
+        totalPrice = dbConn.selectTotalPrice(oid);
+        discount = dbConn.selectDiscount(sid);
     }
 
     public void refresh() {
         getData();
         stockTable.refresh(books);
         bookInOrderTable.refresh(bookInOrder);
+        priceL.setText("Total: " + totalPrice);
+
     }
 }

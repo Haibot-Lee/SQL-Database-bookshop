@@ -98,8 +98,8 @@ public class HomeWindow {
         for (Order i : orders) {
             if (i.status == 0 || i.status == 1) {   // when there's an outstanding (Confirmed/Shipping)
                 return false;
-            } else if (i.status == 4) {    // when there's an Unconfirmed order
-                new OrderMakingWindow(dbConn, i.orderNo);
+            } else if (i.status == 4) {    // when there's an Incomplete order
+                new OrderMakingWindow(dbConn, i.orderNo, sid);
                 return true;
             }
         }
@@ -107,7 +107,7 @@ public class HomeWindow {
         String oid = "" + sid.charAt(6) + sid.charAt(7) + String.format("%02d", orders.size() % 100) + new Date().getTime() % 1000000;
         String[] payInfo = payMethod();
         dbConn.orderMaking(oid, sid, new Date(), payInfo[0], payInfo[1]);
-        new OrderMakingWindow(dbConn, oid);
+        new OrderMakingWindow(dbConn, oid, sid);
 
         return true;
     }

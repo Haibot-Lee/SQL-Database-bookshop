@@ -181,6 +181,38 @@ public class DBConn {
         return sid;
     }
 
+    public float selectTotalPrice(String oid) {
+        float price = 0;
+        try {
+            Statement stm = conn.createStatement();
+            String sql = "SELECT total_price FROM ORDERS " +
+                    "WHERE order_no = '" + oid + "'";
+            ResultSet rs = stm.executeQuery(sql);
+            while (rs.next()) {
+                price = rs.getFloat(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return price;
+    }
+
+    public float selectDiscount(String sid) {
+        float dis = 0;
+        try {
+            Statement stm = conn.createStatement();
+            String sql = "SELECT discount FROM STUDENTS " +
+                    "WHERE stu_no = '" + sid + "'";
+            ResultSet rs = stm.executeQuery(sql);
+            while (rs.next()) {
+                dis = rs.getFloat(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return dis;
+    }
+
     public int selectStock(String bookNo) {
         int stock = -1;
         try {
