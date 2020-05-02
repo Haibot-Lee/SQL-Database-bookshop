@@ -41,6 +41,7 @@ public class HomeWindow {
         jl.setVisible(false);
 
         b1.addActionListener(e -> {
+            jl.setVisible(false);
             String sid = inputSID(sids);
             new OrderSearchWindow(dbConn, sid);
 
