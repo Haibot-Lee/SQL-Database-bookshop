@@ -238,15 +238,17 @@ public class HomeWindow {
                 boolean ifLogin = false;
                 if (ifUseProxy.isSelected()) {
                     try {
-                        HomeWindow homeWindow = new HomeWindow(new DBConn(dbUserName.getText(), new String(dbUserPasw.getPassword()),
-                                proxyHost.getText(), Integer.parseInt(proxyPort.getText()), proxyUserName.getText(), new String(proxyUserPasw.getPassword())));
+//                        HomeWindow homeWindow = new HomeWindow(new DBConn(dbUserName.getText(), new String(dbUserPasw.getPassword()),
+//                                proxyHost.getText(), Integer.parseInt(proxyPort.getText()), proxyUserName.getText(), new String(proxyUserPasw.getPassword())));
+                        HomeWindow homeWindow = new HomeWindow(new DBConn("e8252125", "e8252125",
+                                "faith.comp.hkbu.edu.hk", 22, "e8252125", "Li200041@@"));
                         ifLogin = true;
                     } catch (JSchException ex) {
                         String errorMess = "Fail to login proxy: ";
-                        if (ex.getCause() instanceof java.net.UnknownHostException){
+                        if (ex.getCause() instanceof java.net.UnknownHostException) {
                             ex.printStackTrace();
-                            errorMess += "please check your proxy host address and network!";}
-                        else if (ex.getCause() instanceof java.net.ConnectException)
+                            errorMess += "please check your proxy host address and network!";
+                        } else if (ex.getCause() instanceof java.net.ConnectException)
                             errorMess = errorMess + ex.getCause().getMessage();
                         else {
                             errorMess = errorMess + "please check your user name/password!";
